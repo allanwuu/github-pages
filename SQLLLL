@@ -33,3 +33,237 @@ SET
     ANAR2023 = 0,
     ANAR2024 = 0,
     ANAR2025 = 0;
+
+
+
+
+
+
+UPDATE ##S1
+SET 
+    -- 更新 IF2010 到 IF2025：從 YY 前一年設為 1，然後根據 PREMSTATUS 和 CURRFROM 修正為 0
+    IF2010 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2010 THEN 0 -- CURRFROM 年份及之後設為 0
+                WHEN 2010 >= YY - 1 THEN 1 -- 從 YY 前一年開始設為 1
+                ELSE 0
+             END,
+    IF2011 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2011 THEN 0
+                WHEN 2011 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2012 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2012 THEN 0
+                WHEN 2012 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2013 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2013 THEN 0
+                WHEN 2013 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2014 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2014 THEN 0
+                WHEN 2014 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2015 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2015 THEN 0
+                WHEN 2015 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2016 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2016 THEN 0
+                WHEN 2016 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2017 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2017 THEN 0
+                WHEN 2017 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2018 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2018 THEN 0
+                WHEN 2018 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2019 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2019 THEN 0
+                WHEN 2019 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2020 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2020 THEN 0
+                WHEN 2020 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2021 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2021 THEN 0
+                WHEN 2021 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2022 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2022 THEN 0
+                WHEN 2022 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2023 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2023 THEN 0
+                WHEN 2023 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2024 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2024 THEN 0
+                WHEN 2024 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    IF2025 = CASE 
+                WHEN PREMSTATUS IN ('SU','ET','PU','DH','FL','NT','NP','LA') 
+                     AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) <= 2025 THEN 0
+                WHEN 2025 >= YY - 1 THEN 1
+                ELSE 0
+             END,
+    -- 更新 SU2010 到 SU2025：根據 PREMSTATUS = 'SU' 和 CURRFROM 年份設為 1
+    SU2010 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2010 THEN 1
+                ELSE 0
+             END,
+    SU2011 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2011 THEN 1
+                ELSE 0
+             END,
+    SU2012 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2012 THEN 1
+                ELSE 0
+             END,
+    SU2013 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2013 THEN 1
+                ELSE 0
+             END,
+    SU2014 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2014 THEN 1
+                ELSE 0
+             END,
+    SU2015 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2015 THEN 1
+                ELSE 0
+             END,
+    SU2016 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2016 THEN 1
+                ELSE 0
+             END,
+    SU2017 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2017 THEN 1
+                ELSE 0
+             END,
+    SU2018 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2018 THEN 1
+                ELSE 0
+             END,
+    SU2019 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2019 THEN 1
+                ELSE 0
+             END,
+    SU2020 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2020 THEN 1
+                ELSE 0
+             END,
+    SU2021 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2021 THEN 1
+                ELSE 0
+             END,
+    SU2022 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2022 THEN 1
+                ELSE 0
+             END,
+    SU2023 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2023 THEN 1
+                ELSE 0
+             END,
+    SU2024 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2024 THEN 1
+                ELSE 0
+             END,
+    SU2025 = CASE 
+                WHEN PREMSTATUS = 'SU' AND CURRFROM IS NOT NULL 
+                     AND LEFT(CURRFROM, 4) NOT LIKE '%[^0-9]%' 
+                     AND CAST(LEFT(CURRFROM, 4) AS INT) = 2025 THEN 1
+                ELSE 0
+             END;
