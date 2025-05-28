@@ -38,21 +38,5 @@ SET
 
 
 
-SELECT *
-FROM ##S1
-WHERE 
-    NAR1  < 0 OR
-    NAR2  < 0 OR
-    NAR3  < 0 OR
-    NAR4  < 0 OR
-    NAR5  < 0 OR
-    NAR6  < 0 OR
-    NAR7  < 0 OR
-    NAR8  < 0 OR
-    NAR9  < 0 OR
-    NAR10 < 0 OR
-    NAR11 < 0 OR
-    NAR12 < 0 OR
-    NAR13 < 0 OR
-    NAR14 < 0 OR
-    NAR15 < 0;
+
+=
