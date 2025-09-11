@@ -1,53 +1,3 @@
-' 只有利變壽 (RR_end=2) 才處理回饋金；傳統險 (RR_end=1) 直接略過
-If RR_end = 2 Then
-    If RE = 1 Then
-        ' 第 1 輪只做計數
-        num1 = num1 + 1
-
-    ElseIf RE = 2 Then
-        '=== RD_1 的規則 ===
-        ' NN = 1 → RD_1 只能是 PUAD
-        ' NN <> 1 → RD_1 可為 PUAD 或 PMST（這裡用 test_RD(1) 在兩者間輪替）
-        If NN = 1 Then
-            RD_1 = "PUAD"
-        Else
-            test_RD(1) = test_RD(1) Mod 2 + 1
-            If test_RD(1) = 1 Then
-                RD_1 = "PUAD"
-            Else
-                RD_1 = "PMST"
-            End If
-        End If
-
-        '=== RD_2 的規則 ===（維持你原本的作法：單繳輪 3 種、多期繳輪 4 種）
-        If NN = 1 Then
-            test_RD(2) = test_RD(2) Mod 3 + 1   ' 單繳：PUAD / CSWD / DVAC
-        Else
-            test_RD(2) = test_RD(2) Mod 4 + 1   ' 多期：PUAD / CSWD / DVAC / PMST
-        End If
-
-        If test_RD(2) = 1 Then
-            RD_2 = "PUAD"
-        ElseIf test_RD(2) = 2 Then
-            RD_2 = "CSWD"
-        ElseIf test_RD(2) = 3 Then
-            RD_2 = "DVAC"
-        ElseIf test_RD(2) = 4 Then
-            RD_2 = "PMST"
-        End If
-
-        ' 寫入回饋金選擇（只在 RE=2）
-        Sheets("腳本").Cells(num + 1, 24) = RD_1   ' 第 1~5 年
-        Sheets("腳本").Cells(num + 1, 25) = RD_2   ' 第 6 年後
-    End If
-End If
-
-
-
-
-=======
-
-
 Rem 商品腳本輸出
 Public Sub A_腳本產出()
 Read_Data
@@ -88,7 +38,7 @@ Application.ScreenUpdating = False
                 FI = Sheets("Setup").Cells(7, 7 + cc)     '預定利率
                 X1 = Sheets("Setup").Cells(8, 7 + cc)     '最低投保年齡
                 X2 = Sheets("Setup").Cells(9, 7 + cc)     '最高投保年齡
-                WW = Sheets("Setup").Cells(10, 7 + cc)
+                ww = Sheets("Setup").Cells(10, 7 + cc)
                 
                 For MF = 1 To 2
                     If MF = 1 Then Sex$ = "M" Else Sex$ = "F"
@@ -116,21 +66,26 @@ Application.ScreenUpdating = False
                             index_dis = Sheets("Setup").Cells(15 + Dis1, 24)
                             If index_dis = "測試" Then
                             
-                                If Sheets("Setup").Cells(12, 4) = 1 Then RR_end = 1 Else RR_end = 2          '利變壽1 傳統型2
-                                
+                                If Prod_type = "傳統型" Then RR_end = 1 Else RR_end = 2          '傳統型1 利變壽2
                                 For RR = 1 To RR_end
                                     Index = Index + 1
                                     num = num + 1
+                                    
                                     '增值回饋分享金選擇方式
                                     If (NN = 1 And RR = 2) Or NN <> 1 Then
                                         If RE = 1 Then num1 = num1 + 1
                                         If RE = 2 Then
+                                            '=== RD_1 的規則  第1~5年回饋金選擇===
+                                            If NN = 1 Then
+                                                RD_1 = "PUAD"
+                                            Else
+                                                If test_RD(1) = 1 Then RD_1 = "PMST" Else RD_1 = "PUAD"
+                                            End If
                                             
-                                            test_RD(1) = RR
+                                            '=== RD_2 的規則  第6年後回饋金選擇===
                                             If NN = 1 Then test_RD(2) = test_RD(2) Mod 3 + 1 Else test_RD(2) = test_RD(2) Mod 4 + 1
-                                    
-                                            If test_RD(1) = 1 Then RD_1 = "PMST" Else RD_1 = "PUAD"          '第1~5年回饋金選擇
-                                            If test_RD(2) = 1 Then                                           '第6年後回饋金選擇
+                                            
+                                            If test_RD(2) = 1 Then
                                                 RD_2 = "PUAD"
                                             ElseIf test_RD(2) = 2 Then
                                                 RD_2 = "CSWD"
@@ -139,23 +94,24 @@ Application.ScreenUpdating = False
                                             ElseIf test_RD(2) = 4 Then
                                                 RD_2 = "PMST"
                                             End If
-
+                                            
+                                            Sheets("腳本").Cells(num + 1, 23) = Format(FI * 100, "#.##")         '預定利率
                                             Sheets("腳本").Cells(num + 1, 24) = RD_1                             '第1~5年回饋金選擇方式
                                             Sheets("腳本").Cells(num + 1, 25) = RD_2                             '第6年後回饋金選擇方式
                                         End If
                                      End If
-                                                                                    
+                                         
                                   
                                     '保額
                                     If TTP = 1 Then
-                                        If num = 1 Or test_SA(0) = max_SA / 10000 Or (X <= 15 And test_SA(0) = max_SA_15 / 10000) Then
+                                        If num = 1 Or test_SA(0) = max_SA / 10000 Or (X <= 15 And test_SA(0) = max_SA_kid / 10000) Then
                                             test_SA(0) = min_SA / 10000 + temp * 111 / 10000
                                             temp = temp + 1
                                         Else
                                             If X > 15 Then
-                                                test_SA(0) = Round(WorksheetFunction.min(test_SA(0) + 0.35 + unit / 10000, max_SA / 10000), 4)
+                                                test_SA(0) = Round(min(test_SA(0) + 0.35 + unit / 10000, max_SA / 10000), 4)
                                             Else
-                                                test_SA(0) = Round(WorksheetFunction.min(test_SA(0) + 0.35 + unit / 10000, max_SA_kid / 10000), 4)
+                                                test_SA(0) = Round(min(test_SA(0) + 0.35 + unit / 10000, max_SA_kid / 10000), 4)
                                             End If
                                         End If
                                     Else
@@ -194,13 +150,13 @@ Application.ScreenUpdating = False
                                     Sheets("腳本").Cells(num + 1, 13) = "N"                                        '判斷職業代碼
                                     Sheets("腳本").Cells(num + 1, 14) = CAREER                                     '職業等級
                                     Sheets("腳本").Cells(num + 1, 15) = NN                                         '繳費年期
-                                    Sheets("腳本").Cells(num + 1, 16) = Sheets("Setup").Cells(10, 7 + cc) & "@"    '保障年期
+                                    Sheets("腳本").Cells(num + 1, 16) = IIf(ww = 110, ww & "@", ww)                '保障年期
                                     If TTP = 1 Then
                                         Sheets("腳本").Cells(num + 1, 21) = test_SA(0) * 10000           '保額
                                     Else
                                         Sheets("腳本").Cells(num + 1, 22) = test_GP1(0)                  '保費
                                     End If
-                                    Sheets("腳本").Cells(num + 1, 23) = Format(FI * 100, "#.##")         '預定利率
+                                    
                                     
                             Next RR
                         
@@ -209,6 +165,21 @@ Application.ScreenUpdating = False
                    Next X
                 Next MF
                         
+                        
+            Rem 產生宣告利率
+'            Index1 = Index - num + 1
+'            Index2 = num
+'            Q = (Index2 - Index1) / 4
+'            For kk = Index1 To Index2
+'                If kk <= Index1 + Q Then
+'                   Sheets("腳本").Cells(1 + kk, 23) = RI * 100                     '初始宣告
+'                ElseIf kk > Index1 + Q And kk <= Index1 + Q * 2 Then
+
+'                   Sheets("腳本").Cells(1 + kk, 23) = (RI + RI_var) * 100          '初始宣告+幅度
+'                ElseIf kk > Index1 + Q * 2 And kk <= Index1 + Q * 3 Then
+'                   Sheets("腳本").Cells(1 + kk, 23) = (RI - RI_var) * 100          '初始宣告-幅度
+'                End If
+'            Next
                         
                         
             Next cc
