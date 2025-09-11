@@ -1,72 +1,14 @@
-Rem 商品腳本輸出
-Public Sub A_腳本產出()
-Read_Data
-Application.ScreenUpdating = False
-
-1000 Rem 資料清除
-     Worksheets("腳本").Range("A2:BZ50000").ClearContents
-   
-2000 Rem 資料讀取
-     Calculate                                                  '重新計算
-     Application.Calculation = xlManual                         '手動運算Excel公式(加快程式速度)
-     CURR = Worksheets("Setup").Cells(6, 3)                     '幣別
-     Plancode1 = Sheets("Setup").Cells(7, 3)                    'Plan code
-     Plancode2 = Sheets("Setup").Cells(8, 3)                    '商品代碼
-     Prod_type = Worksheets("Setup").Cells(12, 3)               '商品類型
-     
-     NN_C = Worksheets("Setup").Cells(5, 8).Value               '繳費年期個數
-     min_SA = Sheets("Setup").Cells(15, 3) * 10000              '最低投保金額
-     max_SA_kid = Sheets("Setup").Cells(16, 3) * 10000          '最高投保金額-16歲以下
-     max_SA = Sheets("Setup").Cells(17, 3) * 10000              '最高投保金額-16歲以上
-     unit = Sheets("Setup").Cells(18, 3)
-    
-     
-2010 Rem 宣告利率
-     RI = Worksheets("Setup").Cells(9, 3)                       '初始宣告
-     RI_var = 0.0005                                            '宣告利率變動調整值
-     
-3000 Rem 產腳本
-    For RE = 1 To 2
-        num = 0
-        test_Pay_Type(0) = 0
-        For TTP = 1 To 2
-            test_TTP(0) = TTP
-            For cc = 1 To NN_C
-                Index = 0                                 '紀錄每個年期的腳本個數
-                test_CC(0) = cc
-                NN = Sheets("Setup").Cells(6, 7 + cc)     '年期
-                FI = Sheets("Setup").Cells(7, 7 + cc)     '預定利率
-                X1 = Sheets("Setup").Cells(8, 7 + cc)     '最低投保年齡
-                X2 = Sheets("Setup").Cells(9, 7 + cc)     '最高投保年齡
-                ww = Sheets("Setup").Cells(10, 7 + cc)
-                
-                For MF = 1 To 2
-                    If MF = 1 Then Sex$ = "M" Else Sex$ = "F"
-                    test_MF(0) = MF
-                    For X = X1 To X2
-                        test_X(0) = X
-                        If NN = 1 Then
-                            test_Pay_Type(0) = 1
-                            ptype = "single"
-                        Else
-                            test_Pay_Type(0) = test_Pay_Type(0) Mod 4 + 1
-                            If test_Pay_Type(0) = 1 Then
-                                ptype = "year"
-                            ElseIf test_Pay_Type(0) = 2 Then
-                                ptype = "halfyear"
-                            ElseIf test_Pay_Type(0) = 3 Then
-                                ptype = "season"
-                            ElseIf test_Pay_Type(0) = 4 Then
-                                ptype = "month"
-                            End If
-                        End If
-                        
-                        '判斷10個管道折扣
-                        For Dis1 = 1 To 10
+For Dis1 = 1 To 10
                             index_dis = Sheets("Setup").Cells(15 + Dis1, 24)
                             If index_dis = "測試" Then
                             
-                                If Prod_type = "傳統型" Then RR_end = 1 Else RR_end = 2          '傳統型1 利變壽2
+                                If Prod_type = "傳統型" Then
+                                    RR_end = 1
+                                Else
+                                    If NN = 1 Then RR_end = 1 Else RR_end = 2
+                                End If
+                                
+                                
                                 For RR = 1 To RR_end
                                     Index = Index + 1
                                     num = num + 1
@@ -151,40 +93,12 @@ Application.ScreenUpdating = False
                                     Sheets("腳本").Cells(num + 1, 14) = CAREER                                     '職業等級
                                     Sheets("腳本").Cells(num + 1, 15) = NN                                         '繳費年期
                                     Sheets("腳本").Cells(num + 1, 16) = IIf(ww = 110, ww & "@", ww)                '保障年期
+                                    
                                     If TTP = 1 Then
                                         Sheets("腳本").Cells(num + 1, 21) = test_SA(0) * 10000           '保額
                                     Else
                                         Sheets("腳本").Cells(num + 1, 22) = test_GP1(0)                  '保費
                                     End If
-                                    
-                                    
-                            Next RR
-                        
+
                             End If
                         Next Dis1
-                   Next X
-                Next MF
-                        
-                        
-            Rem 產生宣告利率
-'            Index1 = Index - num + 1
-'            Index2 = num
-'            Q = (Index2 - Index1) / 4
-'            For kk = Index1 To Index2
-'                If kk <= Index1 + Q Then
-'                   Sheets("腳本").Cells(1 + kk, 23) = RI * 100                     '初始宣告
-'                ElseIf kk > Index1 + Q And kk <= Index1 + Q * 2 Then
-
-'                   Sheets("腳本").Cells(1 + kk, 23) = (RI + RI_var) * 100          '初始宣告+幅度
-'                ElseIf kk > Index1 + Q * 2 And kk <= Index1 + Q * 3 Then
-'                   Sheets("腳本").Cells(1 + kk, 23) = (RI - RI_var) * 100          '初始宣告-幅度
-'                End If
-'            Next
-                        
-                        
-            Next cc
-        Next TTP
-    Next RE
-         
-
-End Sub
