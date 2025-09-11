@@ -1,15 +1,169 @@
-盈餘分配
-- 必須設置「區隔帳戶」單獨管理紅利盈餘，維持盈餘的可持續性、可負擔性與平穩性。
-- 當年度可分配盈餘至少有70%要分配給保戶。
-- 連續兩年未達最可能紅利累積值時，公司需向董事會報告、對保戶解釋，並向主管機關說明改進措施。
+Rem 商品腳本輸出
+Public Sub A_腳本產出()
+Read_Data
+Application.ScreenUpdating = False
 
-2. 資訊揭露
-- 銷售文件須揭露：最可能紅利、最低紅利、極端情況紅利可能為零的情形。
-- 簡介、建議書、要保書應明確標示「紅利非保證」、「極端情況下可能為零」等警語。
-- 紅利宣告日後 30 日內，於公司網站揭露：可分配紅利盈餘、紅利實現率與紅利分配計算方式。
+1000 Rem 資料清除
+     Worksheets("腳本").Range("A2:BZ50000").ClearContents
+   
+2000 Rem 資料讀取
+     Calculate                                                  '重新計算
+     Application.Calculation = xlManual                         '手動運算Excel公式(加快程式速度)
+     CURR = Worksheets("Setup").Cells(6, 3)                     '幣別
+     Plancode1 = Sheets("Setup").Cells(7, 3)                    'Plan code
+     Plancode2 = Sheets("Setup").Cells(8, 3)                    '商品代碼
+     Prod_type = Worksheets("Setup").Cells(12, 3)               '商品類型
+     
+     NN_C = Worksheets("Setup").Cells(5, 8).Value               '繳費年期個數
+     min_SA = Sheets("Setup").Cells(15, 3) * 10000              '最低投保金額
+     max_SA_kid = Sheets("Setup").Cells(16, 3) * 10000          '最高投保金額-16歲以下
+     max_SA = Sheets("Setup").Cells(17, 3) * 10000              '最高投保金額-16歲以上
+     unit = Sheets("Setup").Cells(18, 3)
+    
+     
+2010 Rem 宣告利率
+     RI = Worksheets("Setup").Cells(9, 3)                       '初始宣告
+     RI_var = 0.0005                                            '宣告利率變動調整值
+     
+3000 Rem 產腳本
+    For RE = 1 To 2
+        num = 0
+        test_Pay_Type(0) = 0
+        For TTP = 1 To 2
+            test_TTP(0) = TTP
+            For cc = 1 To NN_C
+                Index = 0                                 '紀錄每個年期的腳本個數
+                test_CC(0) = cc
+                NN = Sheets("Setup").Cells(6, 7 + cc)     '年期
+                FI = Sheets("Setup").Cells(7, 7 + cc)     '預定利率
+                X1 = Sheets("Setup").Cells(8, 7 + cc)     '最低投保年齡
+                X2 = Sheets("Setup").Cells(9, 7 + cc)     '最高投保年齡
+                WW = Sheets("Setup").Cells(10, 7 + cc)
+                
+                For MF = 1 To 2
+                    If MF = 1 Then Sex$ = "M" Else Sex$ = "F"
+                    test_MF(0) = MF
+                    For X = X1 To X2
+                        test_X(0) = X
+                        If NN = 1 Then
+                            test_Pay_Type(0) = 1
+                            ptype = "single"
+                        Else
+                            test_Pay_Type(0) = test_Pay_Type(0) Mod 4 + 1
+                            If test_Pay_Type(0) = 1 Then
+                                ptype = "year"
+                            ElseIf test_Pay_Type(0) = 2 Then
+                                ptype = "halfyear"
+                            ElseIf test_Pay_Type(0) = 3 Then
+                                ptype = "season"
+                            ElseIf test_Pay_Type(0) = 4 Then
+                                ptype = "month"
+                            End If
+                        End If
+                        
+                        '判斷10個管道折扣
+                        For Dis1 = 1 To 10
+                            index_dis = Sheets("Setup").Cells(15 + Dis1, 24)
+                            If index_dis = "測試" Then
+                            
+                                If Sheets("Setup").Cells(12, 4) = 1 Then RR_end = 1 Else RR_end = 2          '利變壽1 傳統型2
+                                
+                                For RR = 1 To RR_end
+                                    Index = Index + 1
+                                    num = num + 1
+                                    '增值回饋分享金選擇方式
+                                    If (NN = 1 And RR = 2) Or NN <> 1 Then
+                                        If RE = 1 Then num1 = num1 + 1
+                                        If RE = 2 Then
+                                            
+                                            test_RD(1) = RR
+                                            If NN = 1 Then test_RD(2) = test_RD(2) Mod 3 + 1 Else test_RD(2) = test_RD(2) Mod 4 + 1
+                                    
+                                            If test_RD(1) = 1 Then RD_1 = "PMST" Else RD_1 = "PUAD"          '第1~5年回饋金選擇
+                                            If test_RD(2) = 1 Then                                           '第6年後回饋金選擇
+                                                RD_2 = "PUAD"
+                                            ElseIf test_RD(2) = 2 Then
+                                                RD_2 = "CSWD"
+                                            ElseIf test_RD(2) = 3 Then
+                                                RD_2 = "DVAC"
+                                            ElseIf test_RD(2) = 4 Then
+                                                RD_2 = "PMST"
+                                            End If
 
-3. 銷售合規
-- 禁止業務員將保單報酬率與公司股息率、同業保單或銀行存款等進行比較。
-- 招攬人員需受過分紅保險教育訓練，熟悉商品內容後才能銷售。
-董事會對分紅保單業務負最終責任，需審視紅利實現情形，偏離預期時召開會議討論改進。
+                                            Sheets("腳本").Cells(num + 1, 24) = RD_1                             '第1~5年回饋金選擇方式
+                                            Sheets("腳本").Cells(num + 1, 25) = RD_2                             '第6年後回饋金選擇方式
+                                        End If
+                                     End If
+                                                                                    
+                                  
+                                    '保額
+                                    If TTP = 1 Then
+                                        If num = 1 Or test_SA(0) = max_SA / 10000 Or (X <= 15 And test_SA(0) = max_SA_15 / 10000) Then
+                                            test_SA(0) = min_SA / 10000 + temp * 111 / 10000
+                                            temp = temp + 1
+                                        Else
+                                            If X > 15 Then
+                                                test_SA(0) = Round(WorksheetFunction.min(test_SA(0) + 0.35 + unit / 10000, max_SA / 10000), 4)
+                                            Else
+                                                test_SA(0) = Round(WorksheetFunction.min(test_SA(0) + 0.35 + unit / 10000, max_SA_kid / 10000), 4)
+                                            End If
+                                        End If
+                                    Else
+                                        Erase test_SA
+                                        If num = (num1 - 1) / 2 + 1 Or SA_O >= max_SA / 10000 Or (X <= 15 And SA_O >= max_SA_kid / 10000) Then
+                                            SA_O = min_SA / 10000
+                                        ElseIf X <= 15 Then
+                                            SA_O = Round(min(SA_O + 1.1 + unit / 10000, max_SA_kid / 10000), 4)
+                                        Else
+                                            SA_O = Round(min(SA_O + 10.1 + unit / 10000, max_SA / 10000), 4)
+                                        End If
+                                    End If
 
+                                    '保費
+                                    If TTP = 2 Then
+                                        If num = (num1 - 1) / 2 + 1 Then test_GP1(0) = Round(GP(MF, NN, X) * SA_O, 0) Else test_GP1(0) = Round(GP(MF, NN, X) * SA_O, 0)
+                                    Else
+                                        Erase test_GP1
+                                    End If
+
+                                    '職業等級
+                                    If CAREER + 1 > 6 Then CAREER = 1 Else CAREER = CAREER + 1
+
+                                    Sheets("腳本").Cells(num + 1, 1) = num
+                                    Sheets("腳本").Cells(num + 1, 2) = CURR                                        '幣別
+                                    Sheets("腳本").Cells(num + 1, 3) = ptype                                       '繳別
+                                    Sheets("腳本").Cells(num + 1, 4) = Dis1                                        '折扣組
+                                    Sheets("腳本").Cells(num + 1, 5) = "True"                                      '主約
+                                    Sheets("腳本").Cells(num + 1, 6) = Plancode1                                   'Plancode
+                                    Sheets("腳本").Cells(num + 1, 7) = Plancode2                                   '英文簡稱
+                                    Sheets("腳本").Cells(num + 1, 8) = "O"                                         '投保對象
+                                    Sheets("腳本").Cells(num + 1, 9) = "test"                                      '姓名
+                                    Sheets("腳本").Cells(num + 1, 10) = Sex$                                       '性別
+                                    Sheets("腳本").Cells(num + 1, 11) = X                                          '保險年齡
+                                    Sheets("腳本").Cells(num + 1, 12) = X                                          '足歲年齡
+                                    Sheets("腳本").Cells(num + 1, 13) = "N"                                        '判斷職業代碼
+                                    Sheets("腳本").Cells(num + 1, 14) = CAREER                                     '職業等級
+                                    Sheets("腳本").Cells(num + 1, 15) = NN                                         '繳費年期
+                                    Sheets("腳本").Cells(num + 1, 16) = Sheets("Setup").Cells(10, 7 + cc) & "@"    '保障年期
+                                    If TTP = 1 Then
+                                        Sheets("腳本").Cells(num + 1, 21) = test_SA(0) * 10000           '保額
+                                    Else
+                                        Sheets("腳本").Cells(num + 1, 22) = test_GP1(0)                  '保費
+                                    End If
+                                    Sheets("腳本").Cells(num + 1, 23) = Format(FI * 100, "#.##")         '預定利率
+                                    
+                            Next RR
+                        
+                            End If
+                        Next Dis1
+                   Next X
+                Next MF
+                        
+                        
+                        
+            Next cc
+        Next TTP
+    Next RE
+         
+
+End Sub
