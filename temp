@@ -1,65 +1,77 @@
-Public Sub output(m, n, o, P)
+Private Sub Worksheet_Change(ByVal Target As Range)
+    Dim ws As Worksheet
+    Set ws = Me
 
-    refund_ratio = Worksheets("Setup").Cells(14, 3).Value
-    product_type = Worksheets("Setup").Cells(12, 3).Value
+    ' 當使用者改變 B4:B10 (通路清單) 或 C4 (年期) 時觸發
+    If Intersect(Target, ws.Range("B4:B10,C4")) Is Nothing Then Exit Sub
+    Application.EnableEvents = False
+    Application.ScreenUpdating = False
     
-    Dim DD As Range
-    Set DD = Worksheets("建議書").Range("C12:BC150")
-    DD.Cells.ClearContents
+    '=== 基本設定 ===
+    Dim outputStartRow As Long
+    outputStartRow = 11 ' 產出起始列
+    Dim currentRow As Long
+    currentRow = outputStartRow
     
-    For i = 1 To 110 - P
-        DD.Cells(i, 1) = i
-        DD.Cells(i, 2) = gp_s(m, i)     '累積應繳保費
-        DD.Cells(i, 3) = GP_R(m, i)     '累積實繳保費
-        DD.Cells(i, 4) = B_DB3(m, i)
-        DD.Cells(i, 5) = B_SIA(m, i)
-        DD.Cells(i, 6) = B_SB(m, i)
-        DD.Cells(i, 7) = "=sum(H12:H" & 11 + i & ")"
-        DD.Cells(i, 8) = B_CV(m, i)
-        DD.Cells(i, 9) = B_PV(m, i)
-        DD.Cells(i, 10) = AXP(n, o, P, i)
-        DD.Cells(i, 11) = B_PV_END(m, i)
-        DD.Cells(i, 12) = PUA_VV(m, i)
-        DD.Cells(i, 13) = B_PV_END(m, i) + PUA_VV(m, i)
-        DD.Cells(i, 14) = PUA_L(m, i) + PUA_16(m, i)
-        DD.Cells(i, 15) = A_PUA(m, i)
-        DD.Cells(i, 16) = DVAC(m, i) + DVAC_16(m, i)
-        DD.Cells(i, 17) = PUA_16(m, i)
-        DD.Cells(i, 18) = PUA_SB(m, i)
-        DD.Cells(i, 19) = "=sum(T12:T" & 11 + i & ")"
-        DD.Cells(i, 20) = PUA_CV(m, i)
-        
-        DD.Cells(i, 24) = B_CV_next(m, i)
-        DD.Cells(i, 25) = PUA_CV_next(m, i)
-        DD.Cells(i, 26) = T_CV_NEXT(m, i)
+    ' 清空舊產出（B11 之下）
+    ws.Rows(outputStartRow & ":" & ws.Rows.Count).ClearContents
+    ws.Rows(outputStartRow & ":" & ws.Rows.Count).ClearFormats
 
-        DD.Cells(i, 30) = T_DB3(m, i)
-        DD.Cells(i, 33) = CSWD(m, i)
-        DD.Cells(i, 34) = A_CSWD(m, i)
-        If P + i <= 16 Then DD.Cells(i, 35) = 0 Else DD.Cells(i, 35) = DVAC(m, i)
-        DD.Cells(i, 36) = GP_dis(m, i)
-        DD.Cells(i, 37) = Bonus(m, i)
-        DD.Cells(i, 38) = ET_y(m, i)
-        DD.Cells(i, 39) = ET_d(m, i)
-        DD.Cells(i, 40) = ET_sa(m, i)
-        DD.Cells(i, 41) = B_PUA(m, i)
-        DD.Cells(i, 42) = W(m, i)
-        DD.Cells(i, 43) = Y(m, i)
-        DD.Cells(i, 44) = PUA_CV_next(m, i)
-        DD.Cells(i, 45) = DVAC(m, i)        
-
+    ' 取得輸入資料
+    Dim i As Long,通路 As String, 年期 As Variant
+    Dim 通路清單 As Collection
+    Set 通路清單 = New Collection
+    
+    ' 將 B4:B10 的通路收集起來（非空值）
+    For i = 4 To 10
+        If Trim(ws.Cells(i, "B").Value) <> "" Then
+            通路清單.Add Trim(ws.Cells(i, "B").Value)
+        End If
     Next i
     
-    Worksheets("建議書").Activate
-    DD.Select
-    With Selection
-        .Cells(1, 2).Select
-        ActiveWindow.FreezePanes = True
-        .NumberFormat = "#,#"
-    End With
+    ' 年期可以輸入逗號分隔，例如 2,6
+    Dim 年期輸入 As String
+    年期輸入 = Trim(ws.Range("C4").Value)
+    If 年期輸入 = "" Then GoTo 結束程式
+    年期 = Split(年期輸入, ",")
     
-    For i = 1 To 24
-        DD.Rows(5 * i).Interior.Color = 10079487
-    Next i    
-
- End Sub
+    '=== 通路對應範本設定 ===
+    Dim 範本範圍 As Range
+    Dim 名稱 As String
+    
+    For Each 通路 In 通路清單
+        For i = LBound(年期) To UBound(年期)
+            
+            ' 標題列
+            ws.Cells(currentRow, "B").Value = 通路 & "－" & Trim(年期(i)) & "年期"
+            ws.Cells(currentRow, "B").Font.Bold = True
+            currentRow = currentRow + 1
+            
+            ' 根據通路名稱決定範本來源
+            Select Case 通路
+                Case "業務"
+                    Set 範本範圍 = ws.Range("B61:Y65")
+                Case "經代"
+                    Set 範本範圍 = ws.Range("B66:Y70")
+                Case "銀保"
+                    Set 範本範圍 = ws.Range("B71:Y79")
+                Case "理財"
+                    Set 範本範圍 = ws.Range("B80:Y83")
+                Case Else
+                    GoTo 下一個通路 ' 無此通路名稱則略過
+            End Select
+            
+            ' 複製貼上框框
+            範本範圍.Copy
+            ws.Cells(currentRow, "B").PasteSpecial xlPasteAll
+            currentRow = currentRow + 範本範圍.Rows.Count + 1
+            
+下一個通路:
+        Next i
+    Next 通路
+    
+結束程式:
+    Application.CutCopyMode = False
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+End Sub
