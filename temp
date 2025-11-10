@@ -1,54 +1,47 @@
+Option Explicit
+
 Private Sub Worksheet_Change(ByVal Target As Range)
     Dim ws As Worksheet
     Set ws = Me
-
-    ' 當使用者改變 B4:B10 (通路清單) 或 C4 (年期) 時觸發
-    If Intersect(Target, ws.Range("B4:B10,C4")) Is Nothing Then Exit Sub
+    
+    ' 只在 B4:C7 變動時觸發
+    If Intersect(Target, ws.Range("B4:C7")) Is Nothing Then Exit Sub
+    
+    On Error GoTo CleanFail
     Application.EnableEvents = False
     Application.ScreenUpdating = False
     
     '=== 基本設定 ===
     Dim outputStartRow As Long
-    outputStartRow = 11 ' 產出起始列
+    outputStartRow = 11                  ' 輸出起始列
     Dim currentRow As Long
     currentRow = outputStartRow
     
-    ' 清空舊產出（B11 之下）
+    ' 先清空舊輸出（B11 以下）
     ws.Rows(outputStartRow & ":" & ws.Rows.Count).ClearContents
     ws.Rows(outputStartRow & ":" & ws.Rows.Count).ClearFormats
-
-    ' 取得輸入資料
-    Dim i As Long,通路 As String, 年期 As Variant
-    Dim 通路清單 As Collection
-    Set 通路清單 = New Collection
     
-    ' 將 B4:B10 的通路收集起來（非空值）
-    For i = 4 To 10
-        If Trim(ws.Cells(i, "B").Value) <> "" Then
-            通路清單.Add Trim(ws.Cells(i, "B").Value)
-        End If
-    Next i
-    
-    ' 年期可以輸入逗號分隔，例如 2,6
-    Dim 年期輸入 As String
-    年期輸入 = Trim(ws.Range("C4").Value)
-    If 年期輸入 = "" Then GoTo 結束程式
-    年期 = Split(年期輸入, ",")
-    
-    '=== 通路對應範本設定 ===
+    '=== 逐列讀取通路與年期（B4:C7） ===
+    Dim r As Long
+    Dim 通路 As String
+    Dim 年期 As String
     Dim 範本範圍 As Range
-    Dim 名稱 As String
     
-    For Each 通路 In 通路清單
-        For i = LBound(年期) To UBound(年期)
-            
+    For r = 4 To 7
+        通路 = Trim$(CStr(ws.Cells(r, "B").Value))
+        年期 = Trim$(CStr(ws.Cells(r, "C").Value))
+        
+        If Len(通路) > 0 And Len(年期) > 0 Then
             ' 標題列
-            ws.Cells(currentRow, "B").Value = 通路 & "－" & Trim(年期(i)) & "年期"
-            ws.Cells(currentRow, "B").Font.Bold = True
+            With ws.Cells(currentRow, "B")
+                .Value = 通路 & "－" & 年期 & "年期"
+                .Font.Bold = True
+                .Interior.Color = RGB(242, 242, 242) ' 淺灰底
+            End With
             currentRow = currentRow + 1
             
-            ' 根據通路名稱決定範本來源
-            Select Case 通路
+            ' 依通路挑範本
+            Select Case Trim$(通路)
                 Case "業務"
                     Set 範本範圍 = ws.Range("B61:Y65")
                 Case "經代"
@@ -58,20 +51,30 @@ Private Sub Worksheet_Change(ByVal Target As Range)
                 Case "理財"
                     Set 範本範圍 = ws.Range("B80:Y83")
                 Case Else
-                    GoTo 下一個通路 ' 無此通路名稱則略過
+                    ' 無此通路名稱，跳過
+                    GoTo NextRow
             End Select
             
             ' 複製貼上框框
             範本範圍.Copy
             ws.Cells(currentRow, "B").PasteSpecial xlPasteAll
-            currentRow = currentRow + 範本範圍.Rows.Count + 1
             
-下一個通路:
-        Next i
-    Next 通路
+            ' 下一塊起始列（+範本高度 + 1 空白行）
+            currentRow = currentRow + 範本範圍.Rows.Count + 1
+        End If
+NextRow:
+    Next r
     
-結束程式:
+CleanOK:
     Application.CutCopyMode = False
     Application.EnableEvents = True
     Application.ScreenUpdating = True
+    Exit Sub
+    
+CleanFail:
+    ' 發生錯誤也要把事件打開
+    Application.CutCopyMode = False
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+    MsgBox "產生時發生錯誤：" & Err.Number & " - " & Err.Description, vbExclamation
 End Sub
