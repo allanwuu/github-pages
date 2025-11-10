@@ -8,142 +8,51 @@ Private Sub Worksheet_Change(ByVal Target As Range)
     Application.ScreenUpdating = False
 
     Dim currentRow As Long: currentRow = 11
-    Dim r As Long, i As Long, j As Long
-    Dim 通路Arr(), 年期Arr()
-    Dim 通路 As String, 年期 As String
+    Dim 通路 As Range, 年期 As Range
     Dim 範本範圍 As Range
 
     ' 清空舊輸出 (只到第100列)
     ws.Rows("11:100").ClearContents
     ws.Rows("11:100").ClearFormats
 
-    ' 取通路與年期
-    For r = 4 To 7
-        If ws.Cells(r, "B") <> "" Then
-            ReDim Preserve 通路Arr(1 To UBound(通路Arr) + 1)
-        ElseIf Not IsArray(通路Arr) Then
-            ReDim 通路Arr(1 To 0)
-        End If
-        If ws.Cells(r, "B") <> "" Then 通路Arr(UBound(通路Arr)) = Trim(ws.Cells(r, "B"))
-        
-        If ws.Cells(r, "C") <> "" Then
-            ReDim Preserve 年期Arr(1 To UBound(年期Arr) + 1)
-        ElseIf Not IsArray(年期Arr) Then
-            ReDim 年期Arr(1 To 0)
-        End If
-        If ws.Cells(r, "C") <> "" Then 年期Arr(UBound(年期Arr)) = Trim(ws.Cells(r, "C"))
-    Next r
+    ' 收集通路與年期的非空值
+    Dim 通路清單 As String, 年期清單 As String
+    For Each 通路 In ws.Range("B4:B7")
+        If 通路.Value <> "" Then 通路清單 = 通路清單 & 通路.Value & ","
+    Next
+    For Each 年期 In ws.Range("C4:C7")
+        If 年期.Value <> "" Then 年期清單 = 年期清單 & 年期.Value & ","
+    Next
 
-    ' 防呆
-    If Not IsArray(通路Arr) Or Not IsArray(年期Arr) Then GoTo CleanExit
+    ' 去掉尾巴的逗號
+    If 通路清單 = "" Or 年期清單 = "" Then GoTo CleanExit
+    通路清單 = Left(通路清單, Len(通路清單) - 1)
+    年期清單 = Left(年期清單, Len(年期清單) - 1)
 
-    ' 交叉組合輸出
-    For i = LBound(通路Arr) To UBound(通路Arr)
-        For j = LBound(年期Arr) To UBound(年期Arr)
-            通路 = 通路Arr(i): 年期 = 年期Arr(j)
-            Select Case 通路
+    Dim cArr() As String, yArr() As String
+    cArr = Split(通路清單, ",")
+    yArr = Split(年期清單, ",")
+
+    ' 交叉組合
+    Dim c As Variant, y As Variant
+    For Each c In cArr
+        For Each y In yArr
+            Select Case Trim(c)
                 Case "業務": Set 範本範圍 = ws.Range("B61:Y65")
                 Case "經代": Set 範本範圍 = ws.Range("B66:Y70")
                 Case "銀保": Set 範本範圍 = ws.Range("B71:Y79")
                 Case "理財": Set 範本範圍 = ws.Range("B80:Y83")
-                Case Else: GoTo SkipNext
+                Case Else: GoTo Skip
             End Select
             範本範圍.Copy
             ws.Cells(currentRow, "B").PasteSpecial xlPasteAll
             currentRow = currentRow + 範本範圍.Rows.Count + 1
-SkipNext:
-        Next j
-    Next i
+Skip:
+        Next y
+    Next c
 
 CleanExit:
     Application.CutCopyMode = False
     Application.EnableEvents = True
     Application.ScreenUpdating = True
-End Sub
-
-
-=======
-
-
-
-
-Option Explicit
-
-Private Sub Worksheet_Change(ByVal Target As Range)
-    Dim ws As Worksheet
-    Set ws = Me
-    
-    ' 只在 B4:C7 變動時觸發
-    If Intersect(Target, ws.Range("B4:C7")) Is Nothing Then Exit Sub
-    
-    On Error GoTo CleanFail
-    Application.EnableEvents = False
-    Application.ScreenUpdating = False
-    
-    '=== 基本設定 ===
-    Dim outputStartRow As Long
-    outputStartRow = 11                  ' 輸出起始列
-    Dim currentRow As Long
-    currentRow = outputStartRow
-    
-    ' 先清空舊輸出（B11 以下）
-    ws.Rows(outputStartRow & ":" & ws.Rows.Count).ClearContents
-    ws.Rows(outputStartRow & ":" & ws.Rows.Count).ClearFormats
-    
-    '=== 逐列讀取通路與年期（B4:C7） ===
-    Dim r As Long
-    Dim 通路 As String
-    Dim 年期 As String
-    Dim 範本範圍 As Range
-    
-    For r = 4 To 7
-        通路 = Trim$(CStr(ws.Cells(r, "B").Value))
-        年期 = Trim$(CStr(ws.Cells(r, "C").Value))
-        
-        If Len(通路) > 0 And Len(年期) > 0 Then
-            ' 標題列
-            With ws.Cells(currentRow, "B")
-                .Value = 通路 & "－" & 年期 & "年期"
-                .Font.Bold = True
-                .Interior.Color = RGB(242, 242, 242) ' 淺灰底
-            End With
-            currentRow = currentRow + 1
-            
-            ' 依通路挑範本
-            Select Case Trim$(通路)
-                Case "業務"
-                    Set 範本範圍 = ws.Range("B61:Y65")
-                Case "經代"
-                    Set 範本範圍 = ws.Range("B66:Y70")
-                Case "銀保"
-                    Set 範本範圍 = ws.Range("B71:Y79")
-                Case "理財"
-                    Set 範本範圍 = ws.Range("B80:Y83")
-                Case Else
-                    ' 無此通路名稱，跳過
-                    GoTo NextRow
-            End Select
-            
-            ' 複製貼上框框
-            範本範圍.Copy
-            ws.Cells(currentRow, "B").PasteSpecial xlPasteAll
-            
-            ' 下一塊起始列（+範本高度 + 1 空白行）
-            currentRow = currentRow + 範本範圍.Rows.Count + 1
-        End If
-NextRow:
-    Next r
-    
-CleanOK:
-    Application.CutCopyMode = False
-    Application.EnableEvents = True
-    Application.ScreenUpdating = True
-    Exit Sub
-    
-CleanFail:
-    ' 發生錯誤也要把事件打開
-    Application.CutCopyMode = False
-    Application.EnableEvents = True
-    Application.ScreenUpdating = True
-    MsgBox "產生時發生錯誤：" & Err.Number & " - " & Err.Description, vbExclamation
 End Sub
