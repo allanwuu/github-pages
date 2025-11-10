@@ -1,6 +1,75 @@
 Option Explicit
 
 Private Sub Worksheet_Change(ByVal Target As Range)
+    Dim ws As Worksheet: Set ws = Me
+    If Intersect(Target, ws.Range("B4:C7")) Is Nothing Then Exit Sub
+
+    Application.EnableEvents = False
+    Application.ScreenUpdating = False
+
+    Dim currentRow As Long: currentRow = 11
+    Dim r As Long, i As Long, j As Long
+    Dim 通路Arr(), 年期Arr()
+    Dim 通路 As String, 年期 As String
+    Dim 範本範圍 As Range
+
+    ' 清空舊輸出 (只到第100列)
+    ws.Rows("11:100").ClearContents
+    ws.Rows("11:100").ClearFormats
+
+    ' 取通路與年期
+    For r = 4 To 7
+        If ws.Cells(r, "B") <> "" Then
+            ReDim Preserve 通路Arr(1 To UBound(通路Arr) + 1)
+        ElseIf Not IsArray(通路Arr) Then
+            ReDim 通路Arr(1 To 0)
+        End If
+        If ws.Cells(r, "B") <> "" Then 通路Arr(UBound(通路Arr)) = Trim(ws.Cells(r, "B"))
+        
+        If ws.Cells(r, "C") <> "" Then
+            ReDim Preserve 年期Arr(1 To UBound(年期Arr) + 1)
+        ElseIf Not IsArray(年期Arr) Then
+            ReDim 年期Arr(1 To 0)
+        End If
+        If ws.Cells(r, "C") <> "" Then 年期Arr(UBound(年期Arr)) = Trim(ws.Cells(r, "C"))
+    Next r
+
+    ' 防呆
+    If Not IsArray(通路Arr) Or Not IsArray(年期Arr) Then GoTo CleanExit
+
+    ' 交叉組合輸出
+    For i = LBound(通路Arr) To UBound(通路Arr)
+        For j = LBound(年期Arr) To UBound(年期Arr)
+            通路 = 通路Arr(i): 年期 = 年期Arr(j)
+            Select Case 通路
+                Case "業務": Set 範本範圍 = ws.Range("B61:Y65")
+                Case "經代": Set 範本範圍 = ws.Range("B66:Y70")
+                Case "銀保": Set 範本範圍 = ws.Range("B71:Y79")
+                Case "理財": Set 範本範圍 = ws.Range("B80:Y83")
+                Case Else: GoTo SkipNext
+            End Select
+            範本範圍.Copy
+            ws.Cells(currentRow, "B").PasteSpecial xlPasteAll
+            currentRow = currentRow + 範本範圍.Rows.Count + 1
+SkipNext:
+        Next j
+    Next i
+
+CleanExit:
+    Application.CutCopyMode = False
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+End Sub
+
+
+=======
+
+
+
+
+Option Explicit
+
+Private Sub Worksheet_Change(ByVal Target As Range)
     Dim ws As Worksheet
     Set ws = Me
     
