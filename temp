@@ -1,3 +1,9 @@
+Private Sub Worksheet_Change(ByVal Target As Range)
+    MsgBox "Change Detected"
+End Sub
+
+
+
 Option Explicit
 
 Private Sub Worksheet_Change(ByVal Target As Range)
