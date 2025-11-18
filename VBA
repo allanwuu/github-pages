@@ -1,0 +1,250 @@
+Sub A貼利率專用_檔案先開()
+
+    For Each I In Selection
+    
+        R = I.Row: C = I.Column
+        Set 未轉置的來源 = Workbooks(Cells(R, "E").Value).Worksheets(Cells(R, "F").Value).Range(Cells(R, "G").Value)
+        
+        If Cells(R, "H").Value = "Y" Then
+            轉置的來源 = WorksheetFunction.Transpose(未轉置的來源)
+            Workbooks(Cells(R, "J").Value).Worksheets(Cells(R, "K").Value).Range(Cells(R, "L").Value).Value = 轉置的來源
+        Else
+            Workbooks(Cells(R, "J").Value).Worksheets(Cells(R, "K").Value).Range(Cells(R, "L").Value).Value = 未轉置的來源.Value
+        End If
+        
+        Calculate
+    
+    
+    Next
+
+End Sub
+
+=================================================================
+
+
+
+
+Sub A_刪除範例頁()
+Application.DisplayAlerts = False
+    
+    For Each i In Sheets
+      If Left(i.Name, 1) = "_" Then
+      i.Delete
+      End If
+    
+    Next
+
+End Sub
+Sub B_抓GP_loading()
+
+Set 公版 = Workbooks(Range("C3").Value)
+
+    For Each i In Selection
+    
+    AGE = Cells(i.Row, "D")
+    SEX = Cells(i.Row, "E"): M_F = IIf(SEX = 1, "M", "F")
+    年期 = Cells(i.Row, "C")
+         
+        Set gp_range = 公版.Sheets("Setup").Cells(3, "Q")
+        SEX_SEEK = 0
+        
+        For k = 1 To 20
+         Set gp_range = gp_range.Offset(0, 1)
+         If gp_range.Value = M_F Then SEX_SEEK = 1
+         Debug.Print SEX_SEEK
+         If SEX_SEEK = 1 And gp_range.Value = 年期 Then Exit For
+        Next
+        
+        Cells(i.Row, "F").Value = gp_range.Offset(1 + AGE, 0).Value
+              
+        Set L_range = 公版.Sheets("Setup").Cells(3, "BU")
+        SEX_SEEK = 0
+        
+        For k = 1 To 20
+          Set L_range = L_range.Offset(0, 1)
+          If L_range.Value = M_F Then SEX_SEEK = 1
+          If SEX_SEEK = 1 And L_range.Value = 年期 Then Exit For
+        Next
+            
+    Cells(i.Row, "G").Value = L_range.Offset(1 + AGE, 0).Value
+    
+    Next
+
+End Sub
+
+=============
+Sub C_標頭CHECK()
+
+    範例連結 = Sheets("VBA").Range("C4").Value
+    Set 公版 = Workbooks(Worksheets("VBA").Range("C3").Value)
+    
+    For Each b In Sheets(範例連結).Range("A401:AJ401")
+        If b.Value = "" Then GoTo KKKK
+        
+        b.Offset(1, 0) = 公版.Worksheets("商品範例").Cells(5, b.Value)
+        b.Offset(2, 0) = 公版.Worksheets("商品範例").Cells(6, b.Value)
+    
+KKKK:
+    Next
+
+End Sub
+
+=============
+Sub 抓範例()
+
+範例連結 = Range("C4").Value
+
+ThisWorkbook.Activate
+Set 公版 = Workbooks(Worksheets("VBA").Range("C3").Value)
+Set INP = Worksheets("VBA").Range("B7:W7")
+'抓取輸入值
+  存的檔名 = INP.Find(What:="存的檔名").Offset(1, 0).Value
+
+  年期 = INP.Find(What:="年期").Offset(1, 0).Value
+  年齡 = INP.Find(What:="年齡").Offset(1, 0).Value
+  性別 = INP.Find(What:="性別").Offset(1, 0).Value
+  GP = INP.Find(What:="GP").Offset(1, 0).Value
+  總折扣 = INP.Find(What:="總折扣").Offset(1, 0).Value
+
+  實繳保費 = INP.Find(What:="實繳保費").Offset(1, 0).Value
+  USE保額 = INP.Find(What:="USE保額").Offset(1, 0).Value
+  USE保費 = INP.Find(What:="USE保費").Offset(1, 0).Value
+  年度數 = INP.Find(What:="年度數").Offset(1, 0).Value
+  宣告利率 = INP.Find(What:="宣告利率").Offset(1, 0).Value
+  回饋金公式 = INP.Find(What:="回饋金公式").Offset(1, 0).Value
+  Y1到Y6回饋金 = INP.Find(What:="Y1到Y6回饋金").Offset(1, 0).Value
+  Y7起回饋金選擇 = INP.Find(What:="Y7起回饋金選擇").Offset(1, 0).Value
+  
+    
+   '寫入公版
+    公版.Worksheets("CF(基本保額)").Range("C3") = IIf(年期 < 10, "0", "") + Application.WorksheetFunction.Text(年期, "0")
+    公版.Worksheets("CF(基本保額)").Range("C4") = 性別
+    公版.Worksheets("CF(基本保額)").Range("C5") = IIf(年齡 < 10, "0", "") + Application.WorksheetFunction.Text(年齡, "0")
+    公版.Worksheets("CF(基本保額)").Range("C7") = USE保額 / 10000
+    公版.Worksheets("CF(基本保額)").Range("C12") = 總折扣
+    公版.Worksheets("CF(回饋金)").Range("C16") = 回饋金公式
+    公版.Worksheets("CF(回饋金)").Range("C17") = Y1到Y6回饋金
+    公版.Sheets("CF(回饋金)").Range("C18") = Y7起回饋金選擇
+  
+    公版.Sheets("CF (累計保額)").Range("C20") = 宣告利率
+  Calculate
+  
+ '抓值
+  ThisWorkbook.Activate
+  Sheets(範例連結).Activate
+  Sheets(範例連結).Range("A6: Z115") = ""
+  
+  For Each j In Sheets(範例連結).Range("A401: Z401")
+    If j.Value = "" Then GoTo 往下
+    CC = j.Value
+    Cells(6, j.Column).Resize(年度數, 1).Value = 公版.Worksheets("商品範例").Cells(8, CC).Resize(年度數, 1).Value
+往下:
+  Next
+  
+  '補祝壽
+   If 回饋金公式 <> "死亡險" Then GoTo 收尾 '只有死亡險要補
+   
+   For Each M In Sheets(範例連結).Range("A406: Z406")
+   If M.Value = "" Then GoTo 往下M
+   
+   CC = M.Value
+   Cells(6 + 年度數 - 1, M.Column).Value = 公版.Worksheets("商品範例").Cells(8 + 年度數 - 1, CC).Value
+   
+往下M:
+   Next
+  
+收尾:
+  Run "C_標頭CHECK"
+  
+  
+Calculate
+
+End Sub
+
+=============
+Sub D_檢查最大保額()
+    
+For Each k In Selection
+    
+    Set USE保額 = Cells(k.Row, "L")
+    GP = Cells(k.Row, "F").Value
+    總折扣 = Cells(k.Row, "J").Value
+    實繳保費 = Cells(k.Row, "K").Value
+   
+    For Add = 1 To 5000
+        
+        保額 = USE保額 + Add
+        保費 = Round(Round(Round(Rounddown(Round(保額 * GP / 10000, 3), 2), 3), 0) * (1 - 總折扣), 0)
+        Debug.Print 保額, 保費
+                
+        If 保費 > 實繳保費 Then Exit For
+        保額 = 保額 + 1
+        
+    Next Add
+   
+    USE保額.Value = 保額 - 1
+    Calculate
+    
+Next
+    
+End Sub
+
+
+=============
+Sub E_抓範例迴圈()
+
+Debug.Print "開始 " & Time()
+Application.ScreenUpdating = False
+
+範例連結 = Range("C4").Value
+Calculate
+
+For Each L In Selection
+       
+    Range("B8").Resize(1, 20).Value = Cells(L.Row, "B").Resize(1, 20).Value
+    存檔名 = Cells(L.Row, "B").Value
+    
+    Run "抓範例"
+        
+    If 存檔名 <> "" Then ' 如果有設定檔名 就存出來
+        Sheets(範例連結).Copy After:=Sheets("#")
+        ActiveSheet.Name = "_" & 存檔名
+        Range("A1:K2").Value = Range("A1:K2").Value
+        Range("E3").Value = Range("E3").Value
+        Range("A400:Z408").Value = ""
+    End If
+    
+    ThisWorkbook.Sheets("VBA").Activate
+    Cells(L.Row, "BA").Resize(1, 15).Value = Cells(8, "BA").Resize(1, 15).Value
+    
+Next
+
+
+Debug.Print "完成 " & Time()
+
+End Sub
+
+
+=============
+
+Sub 開檔()
+
+    pth = ActiveCell.Offset(-1, 0).Value + "\"
+    fil = ActiveCell.Value
+    Workbooks.Open pth + fil
+
+End Sub
+
+=============
+
+Sub 開檔唯讀()
+
+pth = ActiveCell.Offset(-1, 0).Value + "\"
+fil = ActiveCell.Value
+
+Workbooks.Open pth + fil
+
+'
+Workbooks.Open pth + fil, ReadOnly:=True
+End Sub
+
