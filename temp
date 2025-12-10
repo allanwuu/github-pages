@@ -1,3 +1,88 @@
+Request URL:
+https://online.pcalife.com.tw/cwsol/api/parPlan/notNtdPlans
+Request Method:
+GET
+Status Code:
+200 OK
+Remote Address:
+192.168.130.226:3128
+Referrer Policy:
+no-referrer
+cache-control:
+no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0, s-maxage=0
+content-encoding:
+gzip
+content-security-policy:
+default-src * wss://*.pcalife.com.tw 'unsafe-eval' 'unsafe-inline' data: blob:;media-src 'self' pcalife.blob.twm.azurestack.taiwancloud.com.tw *.pru.intranet.asia:9082; frame-ancestors 'self' *.pru.intranet.asia *.pcalife.com.tw pcalt.omnisegment.com pcalt.analytics.omnisegment.com
+content-type:
+application/json
+date:
+Wed, 10 Dec 2025 09:35:14 GMT
+expires:
+0
+permissions-policy:
+geolocation=(self '*.pru.intranet.asia' '*pcalife.com.tw'), microphone=() ; camera=() ; fullscreen=(self 'https://www.youtube.com')
+pragma:
+no-cache
+referrer-policy:
+No-referrer
+referrer-policy:
+No-referrer
+server:
+strict-transport-security:
+max-age=31536000; includeSubdomains; preload
+x-cdn:
+Imperva
+x-content-type-options:
+nosniff
+x-frame-options:
+ALLOW-FROM https://www.pcalife.com.tw
+x-iinfo:
+28-36772926-36773829 PNYN RT(1765359287717 27144) q(0 0 0 -1) r(0 0) U2
+x-xss-protection:
+1; mode=block
+:authority:
+online.pcalife.com.tw
+:method:
+GET
+:path:
+/cwsol/api/parPlan/notNtdPlans
+:scheme:
+https
+accept:
+*/*
+accept-encoding:
+gzip, deflate, br, zstd
+accept-language:
+zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7
+cookie:
+JSESSIONID="LIjSE7PNz8hZkTJ3W3uc-Z6-ZmVczxRoaG9i37DW.CWS_Node1:cwsol-prod-server"; visid_incap_2130906=CUfQsbsNQyutZIpR/iw0ipzT1GgAAAAAQUIPAAAAAAAMwpLv2IqO3D0aJ6WtgMfu; visid_incap_2134124=mZYP3f48TvOJqhTwcbSZJ5zT1GgAAAAAQUIPAAAAAAAnrvP9/JBRGmf5satYDMss; incap_ses_667_2134073=3NTpPDL+rkmke8wGH6lBCfoqOWkAAAAAHxUVQgiHgbSDI/5KFx+k9A==; nlbi_2130906=BkD3MwgJZQrtthb9GMgGuAAAAAA3bSk3eo4uj6YI0rfT9b3A; incap_ses_725_2130906=cUjsUikDcQAUqdr+1LcPCvsqOWkAAAAA0q02XxQxCUZozsGEwS2PWw==; nlbi_2134124=bokjaR/ZT1u4XsjmbhY7nwAAAAAGLDOKDsBIyeqznrRY3vaG; nlbi_2134073=PLakK5R/TD8bs8+4QXE94gAAAAAoX//hJAHSC9o0lZirIjkH; incap_ses_725_2134124=Xrm2YU+sjyzyZff+1LcPCqo9OWkAAAAAVX52WDvJ2c+NQn7yIf4h0g==
+priority:
+u=1, i
+sec-ch-ua:
+"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"
+sec-ch-ua-mobile:
+?0
+sec-ch-ua-platform:
+"Windows"
+sec-fetch-dest:
+empty
+sec-fetch-mode:
+cors
+sec-fetch-site:
+same-origin
+user-agent:
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36
+x-requested-with:
+XMLHttpRequest
+
+
+
+=========
+
+
+
+
 # -*- coding: utf-8 -*-
 """
 保誠分紅保單：一次抓所有可抓到商品的
