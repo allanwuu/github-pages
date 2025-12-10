@@ -1,609 +1,189 @@
-[
-    {
-        "seqNo": 1277,
-        "planId": "9243",
-        "planName": "保誠人壽一路長鴻終身壽險(2014/6/12-2016/12/31)"
-    },
-    {
-        "seqNo": 1278,
-        "planId": "9244",
-        "planName": "保誠人壽一路長鴻終身壽險(2017/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1196,
-        "planId": "9583",
-        "planName": "保誠人壽三沛一生終身保險"
-    },
-    {
-        "seqNo": 1178,
-        "planId": "9323",
-        "planName": "保誠人壽五五升豐增額終身壽險(2011/11/21-2012/6/30)"
-    },
-    {
-        "seqNo": 1179,
-        "planId": "9324",
-        "planName": "保誠人壽五五升豐增額終身壽險(2012/7/1-2016/12/31)"
-    },
-    {
-        "seqNo": 1180,
-        "planId": "9333",
-        "planName": "保誠人壽五五登峰增額終身壽險"
-    },
-    {
-        "seqNo": 1181,
-        "planId": "9334",
-        "planName": "保誠人壽五五登峰增額終身壽險(109)(2020/7/1-2021/6/30)"
-    },
-    {
-        "seqNo": 1182,
-        "planId": "9335",
-        "planName": "保誠人壽五五登峰增額終身壽險(109)(2021/7/1-2023/5/21)"
-    },
-    {
-        "seqNo": 1217,
-        "planId": "9897",
-        "planName": "保誠人壽享利一生終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1215,
-        "planId": "9895",
-        "planName": "保誠人壽享利人生終身壽險(2020/7/3-2021/6/30)"
-    },
-    {
-        "seqNo": 1216,
-        "planId": "9896",
-        "planName": "保誠人壽享利人生終身壽險(2021/7/1-2023/9/4)"
-    },
-    {
-        "seqNo": 1206,
-        "planId": "9853",
-        "planName": "保誠人壽六六大順增額終身保險(2012/1/1-2012/6/30)"
-    },
-    {
-        "seqNo": 1207,
-        "planId": "9854",
-        "planName": "保誠人壽六六大順增額終身保險(2012/7/1-2016/12/31)"
-    },
-    {
-        "seqNo": 1276,
-        "planId": "9238",
-        "planName": "保誠人壽共好贏家終身壽險(96A)"
-    },
-    {
-        "seqNo": 1213,
-        "planId": "9893",
-        "planName": "保誠人壽富利一生終身壽險"
-    },
-    {
-        "seqNo": 1214,
-        "planId": "9894",
-        "planName": "保誠人壽富利一生終身壽險(109)"
-    },
-    {
-        "seqNo": 1270,
-        "planId": "9224",
-        "planName": "保誠人壽富利世代終身保險(乙型)"
-    },
-    {
-        "seqNo": 1265,
-        "planId": "9215",
-        "planName": "保誠人壽富利世代終身保險(95)(甲型)"
-    },
-    {
-        "seqNo": 1271,
-        "planId": "9225",
-        "planName": "保誠人壽富利世代終身保險(95)(乙型)"
-    },
-    {
-        "seqNo": 1266,
-        "planId": "9216",
-        "planName": "保誠人壽富利世代終身保險(95A)(甲型)"
-    },
-    {
-        "seqNo": 1272,
-        "planId": "9226",
-        "planName": "保誠人壽富利世代終身保險(95A)(乙型)"
-    },
-    {
-        "seqNo": 1267,
-        "planId": "9217",
-        "planName": "保誠人壽富利世代終身保險(96)(甲型)"
-    },
-    {
-        "seqNo": 1273,
-        "planId": "9227",
-        "planName": "保誠人壽富利世代終身保險(96)(乙型)"
-    },
-    {
-        "seqNo": 1268,
-        "planId": "9218",
-        "planName": "保誠人壽富利世代終身保險(96A)(甲型)"
-    },
-    {
-        "seqNo": 1274,
-        "planId": "9228",
-        "planName": "保誠人壽富利世代終身保險(96A)(乙型)"
-    },
-    {
-        "seqNo": 1269,
-        "planId": "9219",
-        "planName": "保誠人壽富利世代終身保險(98)(甲型)"
-    },
-    {
-        "seqNo": 1275,
-        "planId": "9229",
-        "planName": "保誠人壽富利世代終身保險(98)(乙型)"
-    },
-    {
-        "seqNo": 1279,
-        "planId": "9258",
-        "planName": "保誠人壽富裕世代養老保險(96A)(甲型)"
-    },
-    {
-        "seqNo": 1194,
-        "planId": "9573",
-        "planName": "保誠人壽富貴225終身保險(2016/1/11-2016/12/31)"
-    },
-    {
-        "seqNo": 1195,
-        "planId": "9574",
-        "planName": "保誠人壽富貴225終身保險(2017/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1218,
-        "planId": "9903",
-        "planName": "保誠人壽富貴310終身壽險(2017/10/2-2019/12/31)"
-    },
-    {
-        "seqNo": 1219,
-        "planId": "9904",
-        "planName": "保誠人壽富貴310終身壽險(2020/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1220,
-        "planId": "9913",
-        "planName": "保誠人壽富貴369終身壽險(2019/9/30-2019/12/31)"
-    },
-    {
-        "seqNo": 1221,
-        "planId": "9914",
-        "planName": "保誠人壽富貴369終身壽險(2020/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1193,
-        "planId": "9563",
-        "planName": "保誠人壽富貴58終身保險"
-    },
-    {
-        "seqNo": 1211,
-        "planId": "9883",
-        "planName": "保誠人壽富貴三一五終身壽險(2017/3/20-2019/12/31)"
-    },
-    {
-        "seqNo": 1212,
-        "planId": "9884",
-        "planName": "保誠人壽富貴三一五終身壽險(2020/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1289,
-        "planId": "92L3",
-        "planName": "保誠人壽富貴世代終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1192,
-        "planId": "9543",
-        "planName": "保誠人壽富貴傳家終身保險"
-    },
-    {
-        "seqNo": 1280,
-        "planId": "9273",
-        "planName": "保誠人壽富貴寶終身壽險"
-    },
-    {
-        "seqNo": 1188,
-        "planId": "9523",
-        "planName": "保誠人壽富貴長紅終身保險(2010/7/1-2011/12/31)"
-    },
-    {
-        "seqNo": 1189,
-        "planId": "9524",
-        "planName": "保誠人壽富貴長紅終身保險(2012/1/1-2012/6/30)"
-    },
-    {
-        "seqNo": 1190,
-        "planId": "9533",
-        "planName": "保誠人壽年年得利終身保險(2012/1/1-2012/6/30)"
-    },
-    {
-        "seqNo": 1191,
-        "planId": "9534",
-        "planName": "保誠人壽年年得利終身保險(2012/7/1-2016/12/31)"
-    },
-    {
-        "seqNo": 1201,
-        "planId": "9623",
-        "planName": "保誠人壽步步高升增額終身壽險(2010/7/30-2011/4/27)"
-    },
-    {
-        "seqNo": 1202,
-        "planId": "9624",
-        "planName": "保誠人壽步步高升增額終身壽險(2011/4/28-2011/12/31)"
-    },
-    {
-        "seqNo": 1286,
-        "planId": "92BA",
-        "planName": "保誠人壽照扶天下終身壽險(定額給付型)"
-    },
-    {
-        "seqNo": 1287,
-        "planId": "92CA",
-        "planName": "保誠人壽福鑫世代終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1203,
-        "planId": "9717",
-        "planName": "保誠人壽紅運三喜養老保險(97)"
-    },
-    {
-        "seqNo": 1197,
-        "planId": "95F3",
-        "planName": "保誠人壽紅運來終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1185,
-        "planId": "9514",
-        "planName": "保誠人壽紅運年年終身保險"
-    },
-    {
-        "seqNo": 1186,
-        "planId": "9515",
-        "planName": "保誠人壽紅運年年終身保險(96)"
-    },
-    {
-        "seqNo": 1187,
-        "planId": "9516",
-        "planName": "保誠人壽紅運年年終身保險(96A)"
-    },
-    {
-        "seqNo": 1198,
-        "planId": "9614",
-        "planName": "保誠人壽紅運高升增額終身壽險"
-    },
-    {
-        "seqNo": 1199,
-        "planId": "9615",
-        "planName": "保誠人壽紅運高升增額終身壽險(96)"
-    },
-    {
-        "seqNo": 1200,
-        "planId": "9616",
-        "planName": "保誠人壽紅運高升增額終身壽險(96A)"
-    },
-    {
-        "seqNo": 1183,
-        "planId": "9343",
-        "planName": "保誠人壽耀富人生增額終身壽險"
-    },
-    {
-        "seqNo": 1184,
-        "planId": "9353",
-        "planName": "保誠人壽耀富人生增額終身壽險(109)"
-    },
-    {
-        "seqNo": 1210,
-        "planId": "9873",
-        "planName": "保誠人壽豐利長青增額終身保險"
-    },
-    {
-        "seqNo": 1204,
-        "planId": "9813",
-        "planName": "保誠人壽金多利增額終身保險"
-    },
-    {
-        "seqNo": 1205,
-        "planId": "9823",
-        "planName": "保誠人壽金好康終身保險"
-    },
-    {
-        "seqNo": 1258,
-        "planId": "95JA",
-        "planName": "保誠人壽金會旺終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1257,
-        "planId": "95CA",
-        "planName": "保誠人壽金正旺終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1259,
-        "planId": "95LA",
-        "planName": "保誠人壽鑫喜雙收終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1288,
-        "planId": "92CB",
-        "planName": "保誠人壽鑫旺傳家終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1281,
-        "planId": "92C5",
-        "planName": "保誠人壽鑫滿傳家終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1224,
-        "planId": "9963",
-        "planName": "保誠人壽雙喜臨門終身壽險"
-    },
-    {
-        "seqNo": 1222,
-        "planId": "9923",
-        "planName": "保誠人壽雙星報喜終身壽險"
-    },
-    {
-        "seqNo": 1223,
-        "planId": "9933",
-        "planName": "保誠人壽雙星報喜終身壽險(109)"
-    },
-    {
-        "seqNo": 1208,
-        "planId": "9863",
-        "planName": "保誠人壽高利長青增額終身保險(2012/7/16-2016/12/31)"
-    },
-    {
-        "seqNo": 1209,
-        "planId": "9864",
-        "planName": "保誠人壽高利長青增額終身保險(2017/1/1-2018/1/17)"
-    }
+# -*- coding: utf-8 -*-
+"""
+保誠分紅保單：
+一次抓「所有台幣＋外幣商品」的
+所有宣告年度 × 分紅宣告比率
+
+輸出：
+- pcalife_bonus_all_years_long.xlsx  （長表：一列一筆「商品×年度×紅利別」）
+- pcalife_bonus_all_years_wide.xlsx  （寬表：一列一商品，欄位是各年度比率）
+"""
+
+import requests
+import pandas as pd
+from time import sleep
+
+# =========================
+# 0. 把瀏覽器的 Request Headers 貼在這裡
+#    在 DevTools → Network → 找到「查詢分紅」那一筆
+#    → 右鍵 Copy → Copy request headers
+# =========================
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 ...",
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+    "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "Origin": "https://www.pcalife.com.tw",
+    "Referer": "https://www.pcalife.com.tw/zh/products/participating-insurance/declaration-of-dividend/",
+    # 如果還有 Cookie / X-Requested-With / Authorization 等，就一起貼進來
+}
+
+# =========================
+# 1. 分紅查詢 API 設定
+#    ★★ 這一段你要用 DevTools 找到真正的 API URL ＆ 參數名稱 ★★
+# =========================
+
+# 例如： "https://www.pcalife.com.tw/api/bonus/queryDividend"
+DIVIDEND_API_URL = "https://www.pcalife.com.tw/XXXXXXXXXXX"
+
+# 你剛剛貼過來的 NtdPlans / notNtdPlans
+# 建議直接存成兩個變數，或從 json 檔讀入
+NtdPlans = [
+    # 把你貼的那一大段 NtdPlans JSON，直接改成 Python list 貼在這裡即可
+    # 例如：
+    {"seqNo": 1277, "planId": "9243", "planName": "保誠人壽一路長鴻終身壽險(2014/6/12-2016/12/31)"},
+    {"seqNo": 1278, "planId": "9244", "planName": "保誠人壽一路長鴻終身壽險(2017/1/1-2020/6/30)"},
+    # ...中間略，全部貼完...
 ]
 
-
-
-===
-
-[
-    {
-        "seqNo": 1244,
-        "planId": "9FB3",
-        "planName": "保誠人壽一路勝外幣終身保險(2019/1/2-2019/12/31)"
-    },
-    {
-        "seqNo": 1245,
-        "planId": "9FB4",
-        "planName": "保誠人壽一路勝外幣終身保險(2020/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1264,
-        "planId": "9FMA",
-        "planName": "保誠人壽一路旺外幣終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1263,
-        "planId": "9FIA",
-        "planName": "保誠人壽一路發外幣終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1252,
-        "planId": "9FO3",
-        "planName": "保誠人壽三多利外幣終身保險"
-    },
-    {
-        "seqNo": 1254,
-        "planId": "9C03",
-        "planName": "保誠人壽五五民豐人民幣增額終身壽險"
-    },
-    {
-        "seqNo": 1255,
-        "planId": "9C04",
-        "planName": "保誠人壽五五民豐人民幣增額終身壽險(109)(2020/7/1-2021/6/30)"
-    },
-    {
-        "seqNo": 1256,
-        "planId": "9C05",
-        "planName": "保誠人壽五五民豐人民幣增額終身壽險(109)(2021/7/1起)"
-    },
-    {
-        "seqNo": 1285,
-        "planId": "9R84",
-        "planName": "保誠人壽兩全齊美外幣增額終身壽險"
-    },
-    {
-        "seqNo": 1284,
-        "planId": "9R43",
-        "planName": "保誠人壽六代勝外幣終身壽險"
-    },
-    {
-        "seqNo": 1253,
-        "planId": "9FP3",
-        "planName": "保誠人壽六勝利外幣終身保險"
-    },
-    {
-        "seqNo": 1262,
-        "planId": "9FHA",
-        "planName": "保誠人壽創富御守外幣終身保險"
-    },
-    {
-        "seqNo": 1227,
-        "planId": "9F23",
-        "planName": "保誠人壽增善美外幣增額終身保險"
-    },
-    {
-        "seqNo": 1228,
-        "planId": "9F24",
-        "planName": "保誠人壽新增善美外幣增額終身保險(2011/8/26-2012/6/30)"
-    },
-    {
-        "seqNo": 1229,
-        "planId": "9F25",
-        "planName": "保誠人壽新增善美外幣增額終身保險(2012/7/1-2012/10/31)"
-    },
-    {
-        "seqNo": 1260,
-        "planId": "9C1A",
-        "planName": "保誠人壽民享年年人民幣終身保險(定期給付型)"
-    },
-    {
-        "seqNo": 1292,
-        "planId": "9RE3",
-        "planName": "保誠人壽滿福雙享外幣終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1261,
-        "planId": "9FGA",
-        "planName": "保誠人壽福企滿滿外幣終身保險"
-    },
-    {
-        "seqNo": 1241,
-        "planId": "9F93",
-        "planName": "保誠人壽美利112外幣終身保險(2015/9/21-2016/12/31)"
-    },
-    {
-        "seqNo": 1242,
-        "planId": "9F94",
-        "planName": "保誠人壽美利112外幣終身保險(2017/1/1-2019/12/31)"
-    },
-    {
-        "seqNo": 1243,
-        "planId": "9FA3",
-        "planName": "保誠人壽美利123外幣終身保險"
-    },
-    {
-        "seqNo": 1291,
-        "planId": "9RGA",
-        "planName": "保誠人壽美利29外幣終身壽險"
-    },
-    {
-        "seqNo": 1237,
-        "planId": "9F63",
-        "planName": "保誠人壽美利333外幣終身保險(2013/10/22-2019/12/31)"
-    },
-    {
-        "seqNo": 1238,
-        "planId": "9F64",
-        "planName": "保誠人壽美利333外幣終身保險(2020/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1250,
-        "planId": "9FK3",
-        "planName": "保誠人壽美利715外幣終身保險(定期給付型)(2022/12/19-2023/7/2)"
-    },
-    {
-        "seqNo": 1251,
-        "planId": "9FK4",
-        "planName": "保誠人壽美利715外幣終身保險(定期給付型)(2023/7/3起)"
-    },
-    {
-        "seqNo": 1236,
-        "planId": "9F53",
-        "planName": "保誠人壽美利世代外幣終身壽險"
-    },
-    {
-        "seqNo": 1248,
-        "planId": "9FF3",
-        "planName": "保誠人壽美利世代外幣終身壽險(109)(2020/11/16-2021/6/30)"
-    },
-    {
-        "seqNo": 1249,
-        "planId": "9FF4",
-        "planName": "保誠人壽美利世代外幣終身壽險(109)(2021/7/1起)"
-    },
-    {
-        "seqNo": 1230,
-        "planId": "9F33",
-        "planName": "保誠人壽美利人生外幣終身壽險(2012/4/9-2012/6/30)"
-    },
-    {
-        "seqNo": 1231,
-        "planId": "9F34",
-        "planName": "保誠人壽美利人生外幣終身壽險(2012/7/1-2012/12/31)"
-    },
-    {
-        "seqNo": 1232,
-        "planId": "9F35",
-        "planName": "保誠人壽美利人生外幣終身壽險(2013/1/1-2020/6/30)"
-    },
-    {
-        "seqNo": 1233,
-        "planId": "9F36",
-        "planName": "保誠人壽美利人生外幣終身壽險(109)(2020/7/1-2021/6/30)"
-    },
-    {
-        "seqNo": 1234,
-        "planId": "9F37",
-        "planName": "保誠人壽美利人生外幣終身壽險(109)(2021/7/1-2023/6/30)"
-    },
-    {
-        "seqNo": 1283,
-        "planId": "9R13",
-        "planName": "保誠人壽美利傳家外幣終身壽險"
-    },
-    {
-        "seqNo": 1295,
-        "planId": "9RZ3",
-        "planName": "保誠人壽美利傳富外幣終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1294,
-        "planId": "9RU3",
-        "planName": "保誠人壽美利傳承外幣終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1290,
-        "planId": "9RCA",
-        "planName": "保誠人壽美利守護外幣終身壽險"
-    },
-    {
-        "seqNo": 1247,
-        "planId": "9FE3",
-        "planName": "保誠人壽美利年年外幣終身保險"
-    },
-    {
-        "seqNo": 1282,
-        "planId": "9R03",
-        "planName": "保誠人壽美利成雙外幣終身壽險"
-    },
-    {
-        "seqNo": 1240,
-        "planId": "9F83",
-        "planName": "保誠人壽美利發外幣還本分紅終身保險"
-    },
-    {
-        "seqNo": 1293,
-        "planId": "9RH3",
-        "planName": "保誠人壽美利長紅外幣終身壽險(定期給付型)"
-    },
-    {
-        "seqNo": 1239,
-        "planId": "9F73",
-        "planName": "保誠人壽美富人生外幣終身壽險"
-    },
-    {
-        "seqNo": 1235,
-        "planId": "9F43",
-        "planName": "保誠人壽美年得利外幣終身保險"
-    },
-    {
-        "seqNo": 1246,
-        "planId": "9FD3",
-        "planName": "保誠人壽美滿315外幣保險"
-    },
-    {
-        "seqNo": 1297,
-        "planId": "9S4A",
-        "planName": "保誠人壽美護一生外幣終身壽險"
-    },
-    {
-        "seqNo": 1225,
-        "planId": "9F13",
-        "planName": "保誠人壽金美滿外幣增額終身壽險(2011/4/28-2012/6/30)"
-    },
-    {
-        "seqNo": 1226,
-        "planId": "9F14",
-        "planName": "保誠人壽金美滿外幣增額終身壽險(2012/7/1-2012/12/31)"
-    },
-    {
-        "seqNo": 1296,
-        "planId": "9S33",
-        "planName": "保誠人壽鑫世代外幣終身壽險(定額給付型)"
-    }
+notNtdPlans = [
+    # 同樣把你貼的 notNtdPlans JSON 改成 Python list 貼這裡
+    {"seqNo": 1244, "planId": "9FB3", "planName": "保誠人壽一路勝外幣終身保險(2019/1/2-2019/12/31)"},
+    {"seqNo": 1245, "planId": "9FB4", "planName": "保誠人壽一路勝外幣終身保險(2020/1/1-2020/6/30)"},
+    # ...中間略，全部貼完...
 ]
+
+# 幫你加一個幣別欄位
+for p in NtdPlans:
+    p["currency"] = "NTD"
+
+for p in notNtdPlans:
+    p["currency"] = "FX"
+
+ALL_PLANS = NtdPlans + notNtdPlans
+
+# =========================
+# 2. 實際打 API 抓「宣告年度＋分紅比率」
+# =========================
+
+def fetch_dividend_for_plan(plan):
+    """
+    給一個 plan dict：
+    {
+        "planId": "...",
+        "planName": "...",
+        "currency": "NTD" 或 "FX",
+        ...
+    }
+    回傳該商品的所有年度分紅資料（list of dict）
+    """
+    plan_id = plan["planId"]
+    currency = plan["currency"]
+
+    # ★★ 這邊 payload 要照 DevTools 實際看到的改 ★★
+    # 常見形態：
+    #   - form data: planId=9243&currencyType=N&year=
+    #   - 或 JSON: {"planId":"9243","currencyType":"NTD","year":""}
+    payload = {
+        "planId": plan_id,
+        "currencyType": currency,   # 如果後端要 "N"/"F" 或其它代碼，就自己 map
+        # 如果查詢年度要空白代表「查全部」，就照 DevTools 上看到的來
+        # "declareYear": ""   # 如果有這個欄位就加
+    }
+
+    # 如果是 application/json，就要改成 json=payload，並調整 Content-Type
+    resp = requests.post(DIVIDEND_API_URL, headers=HEADERS, data=payload, timeout=15)
+    resp.raise_for_status()
+
+    # 先假設後端回傳 JSON
+    data = resp.json()
+
+    # 你在 Preview 裡看到的是哪一層，就在這裡調整
+    # 假設格式類似：
+    # {
+    #   "success": true,
+    #   "data": [
+    #       {"declareYear": 2024, "bonusType": "年度紅利", "bonusRate": 1.75, ...},
+    #       ...
+    #   ]
+    # }
+    if isinstance(data, dict) and "data" in data:
+        rows = data["data"]
+    elif isinstance(data, list):
+        rows = data
+    else:
+        print(f"⚠️ planId={plan_id} 回傳格式看不懂：{data}")
+        return []
+
+    result = []
+    for item in rows:
+        # 這邊欄位名稱請依你實際看到的改
+        result.append({
+            "幣別": currency,
+            "商品代碼": plan_id,
+            "商品名稱": plan["planName"],
+            "宣告年度": item.get("declareYear") or item.get("year"),
+            "紅利類別": item.get("bonusType") or item.get("dividendType"),
+            "分紅宣告比率": item.get("bonusRate") or item.get("dividendRate"),
+            # 如果還有例如 "longTermBonusRate"、"terminalBonusRate" 也可以加進來
+        })
+
+    return result
+
+# =========================
+# 3. 迴圈跑全部商品
+# =========================
+
+all_rows = []
+
+for i, plan in enumerate(ALL_PLANS, start=1):
+    print(f"({i}/{len(ALL_PLANS)}) 抓取 {plan['planId']} {plan['planName']} ...")
+    try:
+        rows = fetch_dividend_for_plan(plan)
+        all_rows.extend(rows)
+    except Exception as e:
+        print(f"❌ 抓取 {plan['planId']} 失敗：{e}")
+    sleep(0.3)  # 禮貌性 delay，避免打太兇被擋
+
+if not all_rows:
+    raise SystemExit("完全沒有抓到任何分紅資料，請先檢查：API URL / payload 是否正確？")
+
+df_long = pd.DataFrame(all_rows)
+
+# 排序一下比較好看
+df_long.sort_values(["幣別", "商品名稱", "宣告年度", "紅利類別"], inplace=True)
+
+# =========================
+# 4. 匯出「長表」：一列一筆「商品 × 年度 × 紅利類別」
+# =========================
+
+df_long.to_excel("pcalife_bonus_all_years_long.xlsx", index=False)
+print("✅ 已輸出：pcalife_bonus_all_years_long.xlsx")
+
+# =========================
+# 5. 如果你想給老闆看「一列一商品，欄位是各年度年度紅利比率」的版本
+#    （這裡只針對某一種紅利類別，例如「年度紅利」）
+# =========================
+
+# 先過濾只看「年度紅利」這種（欄位名稱依實際而定）
+mask = df_long["紅利類別"].astype(str).str.contains("年度", na=False)
+df_yr = df_long[mask].copy()
+
+# 做成寬表：index = 商品名稱，columns = 宣告年度，values = 分紅宣告比率
+df_wide = df_yr.pivot_table(
+    index=["幣別", "商品代碼", "商品名稱"],
+    columns="宣告年度",
+    values="分紅宣告比率",
+    aggfunc="first"
+)
+
+# 讓宣告年度變成一般欄位
+df_wide.reset_index(inplace=True)
+
+# 欄位名稱美化一下
+df_wide.columns.name = None
+df_wide.sort_values(["幣別", "商品名稱"], inplace=True)
+
+df_wide.to_excel("pcalife_bonus_all_years_wide.xlsx", index=False)
+print("✅ 已輸出：pcalife_bonus_all_years_wide.xlsx")
