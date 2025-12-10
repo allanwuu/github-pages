@@ -25,3 +25,14 @@ HEADERS = {
     # --- COOKIE：一定要全部放進來，用單引號包住整串 ---
     "Cookie": 'JSESSIONID=LIjSE7PNz8hZkTJ3W3uc-Z6-ZmVczxRoaG9i37DW.CWS_Node1:cwsol-prod-server; visid_incap_2130906=CUfQsbsNQyutZIpR/iw0ipzT1GgAAAAAQUIPAAAAAAAMwpLv2IqO3D0aJ6WtgMfu; visid_incap_2134124=mZYP3f48TvOJqhTwcbSZJ5zT1GgAAAAAQUIPAAAAAAAnrvP9/JBRGmf5satYDMss; incap_ses_667_2134073=3NTpPDL+rkmke8wGH6lBCfoqOWkAAAAAHxUVQgiHgbSDI/5KFx+k9A==; nlbi_2130906=BkD3MwgJZQrtthb9GMgGuAAAAAA3bSk3eo4uj6YI0rfT9b3A; incap_ses_725_2130906=cUjsUikDcQAUqdr+1LcPCvsqOWkAAAAA0q02XxQxCUZozsGEwS2PWw==; nlbi_2134124=bokjaR/ZT1u4XsjmbhY7nwAAAAAGLDOKDsBIyeqznrRY3vaG; nlbi_2134073=PLakK5R/TD8bs8+4QXE94gAAAAAoX//hJAHSC9o0lZirIjkH; incap_ses_725_2134124=Xrm2YU+sjyzyZff+1LcPCqo9OWkAAAAAVX52WDvJ2c+NQn7yIf4h0g==',
 }
+
+
+
+import requests
+session = requests.Session()
+session.headers.update(HEADERS)
+
+url = "https://online.pcalife.com.tw/cwsol/api/parPlan/1293"
+r = session.get(url)
+print(r.status_code)
+print(r.text[:300])
