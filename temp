@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-抓保誠分紅保單年度紅利 / 終期紅利利率總表
+先測試哪些保誠分紅商品抓得到利率，
+把「抓得到的商品」先產出一份 xlsx。
 """
 
 import requests
@@ -8,7 +9,7 @@ import pandas as pd
 from time import sleep
 
 # ======================================
-# 1. 商品清單 API（你確認可以跑的那兩支）
+# 1. 商品清單 API
 # ======================================
 
 LIST_URLS = [
@@ -17,7 +18,7 @@ LIST_URLS = [
 ]
 
 # ======================================
-# 2. 抓取全部商品清單 & 去重
+# 2. 抓商品清單 & 去重
 # ======================================
 
 all_plans = []
@@ -25,140 +26,102 @@ all_plans = []
 for url in LIST_URLS:
     print(f"抓取商品清單：{url}")
     r = requests.get(url, timeout=10)
-    r.raise_for_status()          # 這兩支如果報錯就直接讓程式停掉
-    data = r.json()               # 預期是一個 list
+    r.raise_for_status()
+    data = r.json()
     all_plans.extend(data)
 
 df_plans = pd.DataFrame(all_plans)
-
-# 以 planId 去重，同一商品只保留一筆
 df_plans = df_plans.drop_duplicates(subset="planId").reset_index(drop=True)
 
 print(f"商品清單總數量：{len(df_plans)}")
-# 如果想看前幾筆可以取消註解
-# print(df_plans.head())
 
 
 # ======================================
-# 3. 逐商品打利率 API，展開 regular / final
+# 3. 定義：測試單一商品是否抓得到利率
 # ======================================
 
-rows = []          # 成功抓到利率的資料
-failed_plans = []  # 失敗 / 沒有 API 的商品記錄在這
+def test_plan(plan_id: str):
+    """
+    依照 planId 測試是否抓得到利率
+    1) 先試 /parPlan/{planId}
+    2) 再試 nAbPlans?planId=xxx
+    成功回傳 (True, currency, used_url)
+    失敗回傳 (False, reason, None)
+    """
+    # ① 先試 /parPlan/{planId}
+    url1 = f"https://online.pcalife.com.tw/cwsol/api/parPlan/{plan_id}"
+    try:
+        r1 = requests.get(url1, timeout=10)
+        if r1.status_code == 200:
+            data = r1.json()
+            return True, data.get("currency"), url1
+        reason1 = f"status={r1.status_code} on {url1}"
+    except Exception as e:
+        reason1 = f"exception on {url1}: {e}"
+
+    # ② 再試 nAbPlans?planId=xxx（有些外幣會走這裡）
+    url2 = "https://online.pcalife.com.tw/cwsol/api/parPlan/nAbPlans"
+    try:
+        r2 = requests.get(url2, params={"planId": plan_id}, timeout=10)
+        if r2.status_code == 200:
+            data = r2.json()
+            return True, data.get("currency"), r2.url
+        reason2 = f"status={r2.status_code} on {url2}?planId={plan_id}"
+    except Exception as e2:
+        reason2 = f"exception on {url2}?planId={plan_id}: {e2}"
+
+    # 兩個都失敗
+    return False, reason1 + " | " + reason2, None
+
+
+# ======================================
+# 4. 逐商品測試，分成 OK / 失敗兩組
+# ======================================
+
+ok_list = []
+failed_list = []
 
 for _, p in df_plans.iterrows():
     plan_id = str(p.get("planId"))
     plan_name = p.get("planName", "")
 
-    detail_url = f"https://online.pcalife.com.tw/cwsol/api/parPlan/{plan_id}"
-    print(f"\n抓利率：{plan_id}  {plan_name}")
+    print(f"\n測試商品：{plan_id}  {plan_name}")
+    success, info, used_url = test_plan(plan_id)
 
-    try:
-        r = requests.get(detail_url, timeout=10)
-    except Exception as e:
-        print(f"  ❌ 連線失敗：{e}")
-        failed_plans.append({
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": f"exception: {e}",
-            "url": detail_url,
-        })
-        continue
-
-    if r.status_code != 200:
-        print(f"  ⚠️ HTTP 狀態碼 {r.status_code}，略過")
-        failed_plans.append({
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": f"status_code={r.status_code}",
-            "url": detail_url,
-        })
-        continue
-
-    # 解析 JSON
-    try:
-        data = r.json()
-    except ValueError:
-        print("  ⚠️ 回應不是 JSON，略過")
-        failed_plans.append({
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": "response not JSON",
-            "url": detail_url,
-        })
-        continue
-
-    currency = data.get("currency")
-
-    # tab 說明（年度紅利 / 終期紅利名稱、planType）
-    reg_tab = data.get("regularBonusTab") or {}
-    final_tab = data.get("finalBonusTab") or {}
-
-    reg_plan_type = reg_tab.get("planType")
-    final_plan_type = final_tab.get("planType")
-
-    # ---------- 年度紅利 regularBonusRatios ----------
-    for item in data.get("regularBonusRatios") or []:
-        rows.append({
+    if success:
+        currency = info
+        print("  ✅ OK，可抓到利率，currency =", currency)
+        ok_list.append({
             "planId": plan_id,
             "planName": plan_name,
             "currency": currency,
-            "bonusType": "regular",            # 年度紅利
-            "bonusName": reg_tab.get("name"),
-            "planType": reg_plan_type,         # 美式 / 英式
-            "year": item.get("year"),
-            "ratio": item.get("ratio"),        # 可能是 '100%'、'不適用' 等文字
-            "arbRatio": item.get("arbRatio"),
-            "tbDbBonusRatio": item.get("tbDbBonusRatio"),
-            "tsUbBonusRatio": item.get("tsUbBonusRatio"),
+            "usedUrl": used_url,
         })
-
-    # ---------- 終期 / 長壽紅利 finalBonusRatios ----------
-    for item in data.get("finalBonusRatios") or []:
-        rows.append({
+    else:
+        reason = info
+        print("  ⚠️ 失敗：", reason)
+        failed_list.append({
             "planId": plan_id,
             "planName": plan_name,
-            "currency": currency,
-            "bonusType": "final",              # 終期 / 長壽紅利
-            "bonusName": final_tab.get("name"),
-            "planType": final_plan_type,
-            "year": item.get("year"),
-            "ratio": item.get("ratio"),
-            "arbRatio": item.get("arbRatio"),
-            "tbDbBonusRatio": item.get("tbDbBonusRatio"),
-            "tsUbBonusRatio": item.get("tsUbBonusRatio"),
+            "reason": reason,
         })
 
-    # 避免打太快被當機器人
-    sleep(0.2)
-
+    sleep(0.15)
 
 # ======================================
-# 4. 匯出結果
+# 5. 匯出 xlsx
 # ======================================
 
-# 成功得到利率的資料
-df = pd.DataFrame(rows)
-
-if not df.empty:
-    # 欄位順序調整一下
-    cols = [
-        "planId", "planName", "currency",
-        "bonusType", "bonusName", "planType",
-        "year", "ratio",
-        "arbRatio", "tbDbBonusRatio", "tsUbBonusRatio",
-    ]
-    # 只保留存在的欄位（避免有 key 缺失錯誤）
-    cols = [c for c in cols if c in df.columns]
-    df = df[cols]
-
-    df.to_excel("pcalife_bonus_all_years.xlsx", index=False)
-    print("\n✅ 已輸出：pcalife_bonus_all_years.xlsx")
+if ok_list:
+    df_ok = pd.DataFrame(ok_list)
+    df_ok.to_excel("pcalife_plans_ok.xlsx", index=False)
+    print(f"\n✅ 可抓到利率的商品共 {len(df_ok)} 筆，已輸出：pcalife_plans_ok.xlsx")
 else:
-    print("\n⚠️ 沒有任何成功的利率資料可以匯出")
+    print("\n⚠️ 沒有任何商品被判定為 OK")
 
-# 失敗的商品另外輸出一張表，方便你對照
-if failed_plans:
-    df_failed = pd.DataFrame(failed_plans)
-    df_failed.to_excel("pcalife_bonus_failed_plans.xlsx", index=False)
-    print(f"⚠️ 有 {len(df_failed)} 個 planId 抓不到利率，已輸出：pcalife_bonus_failed_plans.xlsx")
+if failed_list:
+    df_failed = pd.DataFrame(failed_list)
+    df_failed.to_excel("pcalife_plans_failed.xlsx", index=False)
+    print(f"⚠️ 抓不到利率的商品共 {len(df_failed)} 筆，已輸出：pcalife_plans_failed.xlsx")
+else:
+    print("🎉 沒有失敗商品")
