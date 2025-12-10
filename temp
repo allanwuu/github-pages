@@ -1,257 +1,27 @@
-Request URL:
-https://online.pcalife.com.tw/cwsol/api/parPlan/notNtdPlans
-Request Method:
-GET
-Status Code:
-200 OK
-Remote Address:
-192.168.130.226:3128
-Referrer Policy:
-no-referrer
-cache-control:
-no-cache, no-store, must-revalidate, pre-check=0, post-check=0, max-age=0, s-maxage=0
-content-encoding:
-gzip
-content-security-policy:
-default-src * wss://*.pcalife.com.tw 'unsafe-eval' 'unsafe-inline' data: blob:;media-src 'self' pcalife.blob.twm.azurestack.taiwancloud.com.tw *.pru.intranet.asia:9082; frame-ancestors 'self' *.pru.intranet.asia *.pcalife.com.tw pcalt.omnisegment.com pcalt.analytics.omnisegment.com
-content-type:
-application/json
-date:
-Wed, 10 Dec 2025 09:35:14 GMT
-expires:
-0
-permissions-policy:
-geolocation=(self '*.pru.intranet.asia' '*pcalife.com.tw'), microphone=() ; camera=() ; fullscreen=(self 'https://www.youtube.com')
-pragma:
-no-cache
-referrer-policy:
-No-referrer
-referrer-policy:
-No-referrer
-server:
-strict-transport-security:
-max-age=31536000; includeSubdomains; preload
-x-cdn:
-Imperva
-x-content-type-options:
-nosniff
-x-frame-options:
-ALLOW-FROM https://www.pcalife.com.tw
-x-iinfo:
-28-36772926-36773829 PNYN RT(1765359287717 27144) q(0 0 0 -1) r(0 0) U2
-x-xss-protection:
-1; mode=block
-:authority:
-online.pcalife.com.tw
-:method:
-GET
-:path:
-/cwsol/api/parPlan/notNtdPlans
-:scheme:
-https
-accept:
-*/*
-accept-encoding:
-gzip, deflate, br, zstd
-accept-language:
-zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7
-cookie:
-JSESSIONID="LIjSE7PNz8hZkTJ3W3uc-Z6-ZmVczxRoaG9i37DW.CWS_Node1:cwsol-prod-server"; visid_incap_2130906=CUfQsbsNQyutZIpR/iw0ipzT1GgAAAAAQUIPAAAAAAAMwpLv2IqO3D0aJ6WtgMfu; visid_incap_2134124=mZYP3f48TvOJqhTwcbSZJ5zT1GgAAAAAQUIPAAAAAAAnrvP9/JBRGmf5satYDMss; incap_ses_667_2134073=3NTpPDL+rkmke8wGH6lBCfoqOWkAAAAAHxUVQgiHgbSDI/5KFx+k9A==; nlbi_2130906=BkD3MwgJZQrtthb9GMgGuAAAAAA3bSk3eo4uj6YI0rfT9b3A; incap_ses_725_2130906=cUjsUikDcQAUqdr+1LcPCvsqOWkAAAAA0q02XxQxCUZozsGEwS2PWw==; nlbi_2134124=bokjaR/ZT1u4XsjmbhY7nwAAAAAGLDOKDsBIyeqznrRY3vaG; nlbi_2134073=PLakK5R/TD8bs8+4QXE94gAAAAAoX//hJAHSC9o0lZirIjkH; incap_ses_725_2134124=Xrm2YU+sjyzyZff+1LcPCqo9OWkAAAAAVX52WDvJ2c+NQn7yIf4h0g==
-priority:
-u=1, i
-sec-ch-ua:
-"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"
-sec-ch-ua-mobile:
-?0
-sec-ch-ua-platform:
-"Windows"
-sec-fetch-dest:
-empty
-sec-fetch-mode:
-cors
-sec-fetch-site:
-same-origin
-user-agent:
-Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36
-x-requested-with:
-XMLHttpRequest
-
-
-
-=========
-
-
-
-
-# -*- coding: utf-8 -*-
-"""
-保誠分紅保單：一次抓所有可抓到商品的
-所有宣告年度 × 分紅宣告比率（年度紅利 + 終期/長壽紅利）
-
-主輸出：pcalife_bonus_all_years.xlsx
-"""
-
-import requests
-import pandas as pd
-from time import sleep
-
-# =========================
-# 0. 把瀏覽器的 Request Headers 貼在這裡
-#    ★★ 請用你 DevTools 看到的實際字串取代下面的範例值 ★★
-# =========================
-
 HEADERS = {
-    # 下面這幾行用你自己瀏覽器的值取代
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
     "Accept": "*/*",
-    "X-Requested-With": "XMLHttpRequest",
+    "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+
+    "Origin": "https://www.pcalife.com.tw",
     "Referer": "https://www.pcalife.com.tw/zh/products/participating-insurance/declaration-of-dividend/",
-    "Cookie": "JSESSIONID="LIjSE7PNz8hZkTJ3W3uc-Z6-ZmVczxRoaG9i37DW.CWS_Node1:cwsol-prod-server"; visid_incap_2130906=CUfQsbsNQyutZIpR/iw0ipzT1GgAAAAAQUIPAAAAAAAMwpLv2IqO3D0aJ6WtgMfu; visid_incap_2134124=mZYP3f48TvOJqhTwcbSZJ5zT1GgAAAAAQUIPAAAAAAAnrvP9/JBRGmf5satYDMss; incap_ses_667_2134073=3NTpPDL+rkmke8wGH6lBCfoqOWkAAAAAHxUVQgiHgbSDI/5KFx+k9A==; nlbi_2130906=BkD3MwgJZQrtthb9GMgGuAAAAAA3bSk3eo4uj6YI0rfT9b3A; incap_ses_725_2130906=cUjsUikDcQAUqdr+1LcPCvsqOWkAAAAA0q02XxQxCUZozsGEwS2PWw==; nlbi_2134124=bokjaR/ZT1u4XsjmbhY7nwAAAAAGLDOKDsBIyeqznrRY3vaG; nlbi_2134073=PLakK5R/TD8bs8+4QXE94gAAAAAoX//hJAHSC9o0lZirIjkH; incap_ses_725_2134124=Xrm2YU+sjyzyZff+1LcPCqo9OWkAAAAAVX52WDvJ2c+NQn7yIf4h0g==",
+
+    "X-Requested-With": "XMLHttpRequest",
+
+    # --- Critical Chrome client hints ---
+    "sec-ch-ua": '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+
+    # --- Fetch metadata headers ---
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+
+    "Connection": "keep-alive",
+    "priority": "u=1, i",
+
+    # --- COOKIE：一定要全部放進來，用單引號包住整串 ---
+    "Cookie": 'JSESSIONID=LIjSE7PNz8hZkTJ3W3uc-Z6-ZmVczxRoaG9i37DW.CWS_Node1:cwsol-prod-server; visid_incap_2130906=CUfQsbsNQyutZIpR/iw0ipzT1GgAAAAAQUIPAAAAAAAMwpLv2IqO3D0aJ6WtgMfu; visid_incap_2134124=mZYP3f48TvOJqhTwcbSZJ5zT1GgAAAAAQUIPAAAAAAAnrvP9/JBRGmf5satYDMss; incap_ses_667_2134073=3NTpPDL+rkmke8wGH6lBCfoqOWkAAAAAHxUVQgiHgbSDI/5KFx+k9A==; nlbi_2130906=BkD3MwgJZQrtthb9GMgGuAAAAAA3bSk3eo4uj6YI0rfT9b3A; incap_ses_725_2130906=cUjsUikDcQAUqdr+1LcPCvsqOWkAAAAA0q02XxQxCUZozsGEwS2PWw==; nlbi_2134124=bokjaR/ZT1u4XsjmbhY7nwAAAAAGLDOKDsBIyeqznrRY3vaG; nlbi_2134073=PLakK5R/TD8bs8+4QXE94gAAAAAoX//hJAHSC9o0lZirIjkH; incap_ses_725_2134124=Xrm2YU+sjyzyZff+1LcPCqo9OWkAAAAAVX52WDvJ2c+NQn7yIf4h0g==',
 }
-
-# 建議用 Session 共用 cookies / headers
-session = requests.Session()
-session.headers.update(HEADERS)
-
-# =========================
-# 1. 商品清單 API（兩支）
-# =========================
-LIST_URLS = [
-    "https://online.pcalife.com.tw/cwsol/api/parPlan/ntdPlans",      # 台幣
-    "https://online.pcalife.com.tw/cwsol/api/parPlan/notNtdPlans",   # 非台幣（外幣）
-]
-
-# =========================
-# 2. 抓商品清單 & 去重
-# =========================
-all_plans = []
-
-for url in LIST_URLS:
-    print(f"抓取商品清單：{url}")
-    r = session.get(url, timeout=10)
-    r.raise_for_status()
-    all_plans.extend(r.json())
-
-df_plans = pd.DataFrame(all_plans)
-df_plans = df_plans.drop_duplicates(subset="planId").reset_index(drop=True)
-
-print(f"商品清單總數量：{len(df_plans)}")
-
-# =========================
-# 3. 定義：抓單一商品利率
-# =========================
-def fetch_detail_for_plan(plan_id: str):
-    """
-    依 planId 抓利率 JSON
-    網站實際用的是：/cwsol/api/parPlan/{planId}
-    回傳：(json物件, 使用的URL) 或 (None, 錯誤訊息)
-    """
-    url = f"https://online.pcalife.com.tw/cwsol/api/parPlan/{plan_id}"
-    try:
-        r = session.get(url, timeout=10)
-        if r.status_code == 200:
-            return r.json(), url
-        else:
-            # 順便把錯誤內容存成檔案一次就好，方便你 debug 用
-            print(f"  ⚠️ status={r.status_code}，第一個錯的 response 內容會寫到 error_400.html")
-            try:
-                with open("error_400.html", "w", encoding="utf-8") as f:
-                    f.write(r.text)
-            except Exception:
-                pass
-            return None, f"status={r.status_code} on {url}"
-    except Exception as e:
-        return None, f"exception on {url}: {e}"
-
-# =========================
-# 4. 逐商品展開年度紅利 / 終期紅利
-# =========================
-rows = []
-failed_plans = []
-
-for _, p in df_plans.iterrows():
-    plan_id = str(p.get("planId"))
-    plan_name = p.get("planName", "")
-
-    print(f"\n處理商品：{plan_id}  {plan_name}")
-
-    data, info = fetch_detail_for_plan(plan_id)
-
-    if data is None:
-        print("  ⚠️ 抓不到利率：", info)
-        failed_plans.append({
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": info,
-        })
-        continue
-
-    print("  ✅ 使用的 API：", info)
-
-    currency = data.get("currency")
-
-    # tab 說明（名稱 + 美式/英式）
-    reg_tab = data.get("regularBonusTab") or {}
-    final_tab = data.get("finalBonusTab") or {}
-
-    reg_plan_type = reg_tab.get("planType")
-    final_plan_type = final_tab.get("planType")
-
-    # ---- 年度紅利 regularBonusRatios ----
-    for item in data.get("regularBonusRatios") or []:
-        rows.append({
-            "planId": plan_id,
-            "planName": plan_name,
-            "currency": currency,
-            "bonusType": "regular",                 # 年度紅利
-            "bonusName": reg_tab.get("name"),
-            "planType": reg_plan_type,              # 美式 / 英式
-            "year": item.get("year"),
-            "ratio": item.get("ratio"),             # 100% / 不適用 / 不分配 …
-            "arbRatio": item.get("arbRatio"),
-            "tbDbBonusRatio": item.get("tbDbBonusRatio"),
-            "tsUbBonusRatio": item.get("tsUbBonusRatio"),
-        })
-
-    # ---- 終期 / 長壽紅利 finalBonusRatios ----
-    for item in data.get("finalBonusRatios") or []:
-        rows.append({
-            "planId": plan_id,
-            "planName": plan_name,
-            "currency": currency,
-            "bonusType": "final",                   # 終期 / 長壽紅利
-            "bonusName": final_tab.get("name"),
-            "planType": final_plan_type,
-            "year": item.get("year"),
-            "ratio": item.get("ratio"),
-            "arbRatio": item.get("arbRatio"),
-            "tbDbBonusRatio": item.get("tbDbBonusRatio"),
-            "tsUbBonusRatio": item.get("tsUbBonusRatio"),
-        })
-
-    sleep(0.2)
-
-# =========================
-# 5. 匯出 Excel
-# =========================
-df = pd.DataFrame(rows)
-
-if not df.empty:
-    cols = [
-        "planId", "planName", "currency",
-        "bonusType", "bonusName", "planType",
-        "year", "ratio",
-        "arbRatio", "tbDbBonusRatio", "tsUbBonusRatio",
-    ]
-    cols = [c for c in cols if c in df.columns]
-    df = df[cols]
-
-    df.to_excel("pcalife_bonus_all_years.xlsx", index=False)
-    print("\n✅ 已輸出：pcalife_bonus_all_years.xlsx")
-else:
-    print("\n⚠️ 沒有任何成功的利率資料可匯出（多半是 header/cookie 還沒貼對）")
-
-if failed_plans:
-    df_failed = pd.DataFrame(failed_plans)
-    df_failed.to_excel("pcalife_bonus_failed_plans.xlsx", index=False)
-    print(f"⚠️ 有 {len(df_failed)} 個 planId 抓不到利率，已輸出：pcalife_bonus_failed_plans.xlsx")
