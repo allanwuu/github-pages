@@ -1,64 +1,119 @@
-Private Sub Worksheet_Change(ByVal Target As Range)
-    MsgBox "Change Detected"
-End Sub
+優化分紅商品「儲存生息」機制：提升客戶資金留存與資產規模之策略提案
 
+ 
 
+① 策略發想｜借鏡市場標籤：中國泰康「主帳–附能帳戶」的資金留存模式
 
-Option Explicit
+核心洞察：中國泰康人壽運用「儲身息」架構，將分紅保單生的資金（生存金、現金紅利）精細導入「二階段」的時間條軸管理帳戶，進行二次累積價值。此模式具高資金留存效率，為公司跨具競爭優勢。
 
-Private Sub Worksheet_Change(ByVal Target As Range)
-    Dim ws As Worksheet: Set ws = Me
-    If Intersect(Target, ws.Range("B4:C7")) Is Nothing Then Exit Sub
+ 
 
-    Application.EnableEvents = False
-    Application.ScreenUpdating = False
+分紅主帳（第一生效日）
 
-    Dim currentRow As Long: currentRow = 11
-    Dim 通路 As Range, 年期 As Range
-    Dim 範本範圍 As Range
+生存金 & 現金紅利 → 自動轉入附能帳戶（合約約定）
 
-    ' 清空舊輸出 (只到第100列)
-    ws.Rows("11:100").ClearContents
-    ws.Rows("11:100").ClearFormats
+年金給付 → 轉為累積值（第二生效日） → 產生增加額 & 附加值（第二次增值）
 
-    ' 收集通路與年期的非空值
-    Dim 通路清單 As String, 年期清單 As String
-    For Each 通路 In ws.Range("B4:B7")
-        If 通路.Value <> "" Then 通路清單 = 通路清單 & 通路.Value & ","
-    Next
-    For Each 年期 In ws.Range("C4:C7")
-        If 年期.Value <> "" Then 年期清單 = 年期清單 & 年期.Value & ","
-    Next
+ 
 
-    ' 去掉尾巴的逗號
-    If 通路清單 = "" Or 年期清單 = "" Then GoTo CleanExit
-    通路清單 = Left(通路清單, Len(通路清單) - 1)
-    年期清單 = Left(年期清單, Len(年期清單) - 1)
+商業價值分析：
 
-    Dim cArr() As String, yArr() As String
-    cArr = Split(通路清單, ",")
-    yArr = Split(年期清單, ",")
+- 最大化資產管理規模（AUM Maximization）：透過「二次增值」結構，有效提升留存資金，避免現金生息型商品的瞬間季金回頭。
 
-    ' 交叉組合
-    Dim c As Variant, y As Variant
-    For Each c In cArr
-        For Each y In yArr
-            Select Case Trim(c)
-                Case "業務": Set 範本範圍 = ws.Range("B61:Y65")
-                Case "經代": Set 範本範圍 = ws.Range("B66:Y70")
-                Case "銀保": Set 範本範圍 = ws.Range("B71:Y79")
-                Case "理財": Set 範本範圍 = ws.Range("B80:Y83")
-                Case Else: GoTo Skip
-            End Select
-            範本範圍.Copy
-            ws.Cells(currentRow, "B").PasteSpecial xlPasteAll
-            currentRow = currentRow + 範本範圍.Rows.Count + 1
-Skip:
-        Next y
-    Next c
+- 減輕精算負擔風險（Mitigating Liability Risk）：將傳統性給付從保單現金流中轉換至非保證型的「獎利增值」，避免利差損風險，提升公司經營穩定度。
 
-CleanExit:
-    Application.CutCopyMode = False
-    Application.EnableEvents = True
-    Application.ScreenUpdating = True
-End Sub
+ 
+
+② 現況挑戰｜本公司「儲存生息」利率缺乏市場競爭力，面臨資金外流風險
+
+分紅負值面：
+
+若客戶選擇「儲存生息」，利率缺乏市場性（僅行業平均），對客戶吸引力偏低。
+
+ 
+
+外界負向回饋：
+
+參考業界（如：黑馬人壽）作法，利率僅優化有限幅度。
+
+ 
+
+具體營運痛點：
+
+當前美系保單、保單帳戶利率較具競爭力，儲存生息對於不活化（未敢領取）之資金效益有限，致現行機制無法誘因客戶留存，產生對於本公司資金池操作之負面影響與評價。
+
+ 
+
+核心風險與機會成本：
+
+- 資金外洩風險（Capital Outflow Risk）：現行利率非誘因下，客戶傾向提領年度盛餘，影響公司資金營運池規模。
+
+- 客戶黏著度弱化（Weakened Customer Loyalty）：未能提供具吸引力的利率與彈設選項，易流失客戶至他商品，提升換單與跨保單轉換的風險。
+
+ 
+
+③ 解決方案｜推出創新「紅利增值權益」與批註條款
+
+方案概述：
+
+不需更動現行契約，即可新增「紅利增值」批註功能，提供客戶彈性化「儲存生息」選項強化客戶留存意願。
+
+ 
+
+1. 客戶選擇（Client Choice）
+
+是否願意將未領取之分紅（現金紅利、生存金）留存於帳戶內 N 年（建議 N = 3–5 年）？
+
+ 
+
+若 N 年內未提領 →
+
+激勵機制（Incentive）：
+
+提供「獎利增值」給付（即第二次增值）
+
+ 
+
+若 N 年內提領 →
+
+彈性方案（Flexibility & Safeguard）：
+
+提供基本生息利率，不強制綁約
+
+ 
+
+④ 預期效益｜創造客戶・公司・通路的「三贏」價值循環
+
+對客戶（Client Value）：
+
+- 生息選項更具市場吸引力
+
+- 提供彈性與自主權
+
+- 提升資金累積效果
+
+- 強化保險長期價值體驗
+
+ 
+
+對公司（Company Value）：
+
+- 提升留存資金、提高 AUM
+
+- 精算負擔降低，利差損風險緩解
+
+- 增進保單長尾價值與資金池運用空間
+
+ 
+
+對通路（Sales Channel Value）：
+
+- 更高誘因吸引客戶留存
+
+- 降低提前解約與跨商品替換率
+
+- 通路與客戶關係更穩固
+
+- 增加後續銷售與交叉銷售機會
+
+ 
