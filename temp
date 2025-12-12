@@ -1,182 +1,36 @@
-# -*- coding: utf-8 -*-
-"""
-保誠分紅保單：一次抓所有「有利率資料」的商品
-所有宣告年度 × 分紅宣告比率（年度紅利 + 終期/長壽紅利）
-
-輸出：
- 1) pcalife_bonus_all_years.xlsx       -> 每商品 × 年度 × 分紅比率
- 2) pcalife_bonus_failed_seqno.xlsx   -> seqNo 抓不到資料的清單
-"""
-
-import requests
-import pandas as pd
-from time import sleep
-
-# ========== 0. Headers（照你瀏覽器的 Request Headers） ==========
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-    "Accept": "*/*",
-    "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "Origin": "https://www.pcalife.com.tw",
-    "Referer": "https://www.pcalife.com.tw/zh/products/participating-insurance/declaration-of-dividend/",
-    "X-Requested-With": "XMLHttpRequest",
-    "sec-ch-ua": '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin",
-    "Connection": "keep-alive",
-    "priority": "u=1, i",
-    # ⚠ 這裡貼你 DevTools 的 cookie 整串（只有英文數字標點、不要中文）
-    "Cookie": '在這裡貼你自己的 Cookie 整串',
-}
-
-session = requests.Session()
-session.headers.update(HEADERS)
-
-# ========== 1. 商品清單（台幣 + 非台幣），內含 seqNo & planId ==========
-LIST_URLS = [
-    "https://online.pcalife.com.tw/cwsol/api/parPlan/ntdPlans",
-    "https://online.pcalife.com.tw/cwsol/api/parPlan/notNtdPlans",
-]
-
-all_plans = []
-for url in LIST_URLS:
-    print(f"抓取商品清單：{url}")
-    r = session.get(url, timeout=10)
-    r.raise_for_status()
-    all_plans.extend(r.json())
-
-df_plans = pd.DataFrame(all_plans)
-
-# 強制把 seqNo / planId 都當字串處理（避免被轉成整數）
-df_plans["seqNo"] = df_plans["seqNo"].astype(str)
-df_plans["planId"] = df_plans["planId"].astype(str)
-
-df_plans = df_plans.drop_duplicates(subset=["seqNo"]).reset_index(drop=True)
-
-print(f"\n📌 商品清單筆數（含台幣+外幣）：{len(df_plans)}")
-print(df_plans.head())
-
-# ========== 2. 用 seqNo 打 detail API ==========
-def fetch_detail_by_seqno(seq_no: str):
-    """
-    用 seqNo 抓利率 JSON：
-      GET /cwsol/api/parPlan/{seqNo}
-    """
-    url = f"https://online.pcalife.com.tw/cwsol/api/parPlan/{seq_no}"
-    try:
-        r = session.get(url, timeout=10)
-        if r.status_code == 200:
-            return r.json(), url
-        else:
-            return None, f"status={r.status_code}"
-    except Exception as e:
-        return None, f"exception: {e}"
-
-# ========== 3. 逐 seqNo 展開利率 ==========
-rows = []          # 成功展開的分紅資料
-failed_seqno = []  # 完全抓不到或沒有任何利率的 seqNo（給你檢查用）
-
-for _, p in df_plans.iterrows():
-    seq_no = p["seqNo"]      # detail API 用這個
-    plan_id = p["planId"]    # 給你識別商品用
-    plan_name = p["planName"]
-
-    print(f"\n▶ 處理 seqNo：{seq_no} | planId：{plan_id} | {plan_name}")
-
-    data, info = fetch_detail_by_seqno(seq_no)
-
-    if data is None:
-        print("  ❌ API 失敗：", info)
-        failed_seqno.append({
-            "seqNo": seq_no,
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": info,
-        })
-        continue
-
-    # 有些會回 {"planName":"商品不存在",...}
-    if data.get("planName") == "商品不存在":
-        print("  ❌ 商品不存在")
-        failed_seqno.append({
-            "seqNo": seq_no,
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": "商品不存在",
-        })
-        continue
-
-    currency = data.get("currency")
-    reg_tab = data.get("regularBonusTab") or {}
-    final_tab = data.get("finalBonusTab") or {}
-    reg_ratios = data.get("regularBonusRatios") or []
-    final_ratios = data.get("finalBonusRatios") or []
-
-    # 完全沒有任何分紅年度，就算商品存在，也記到 failed 裡（方便你檢查）
-    if (not reg_ratios) and (not final_ratios):
-        print("  ⚠ 商品存在但沒有分紅年度資料")
-        failed_seqno.append({
-            "seqNo": seq_no,
-            "planId": plan_id,
-            "planName": plan_name,
-            "reason": "無 regular/final 分紅資料",
-        })
-        continue
-
-    print("  ✅ 有分紅資料，展開年度…")
-
-    # 年度紅利 regularBonusRatios
-    for item in reg_ratios:
-        rows.append({
-            "seqNo": seq_no,
-            "planId": plan_id,
-            "planName": plan_name,
-            "currency": currency,
-            "bonusType": "regular",            # 年度紅利
-            "bonusName": reg_tab.get("name"),
-            "planType": reg_tab.get("planType"),  # 美式 / 英式
-            "year": item.get("year"),
-            "ratio": item.get("ratio"),        # 100% / 不適用 / 不分配
-        })
-
-    # 終期 / 長壽紅利 finalBonusRatios
-    for item in final_ratios:
-        rows.append({
-            "seqNo": seq_no,
-            "planId": plan_id,
-            "planName": plan_name,
-            "currency": currency,
-            "bonusType": "final",              # 終期 / 長壽紅利
-            "bonusName": final_tab.get("name"),
-            "planType": final_tab.get("planType"),
-            "year": item.get("year"),
-            "ratio": item.get("ratio"),
-        })
-
-    # 不要太兇猛打爆對方 server，稍微喘一下
-    sleep(0.15)
-
-# ========== 4. 匯出 Excel ==========
-df_success = pd.DataFrame(rows)
-df_failed = pd.DataFrame(failed_seqno)
-
-if not df_success.empty:
-    # 排一下欄位順序比較好看
-    col_order = [
-        "seqNo", "planId", "planName", "currency",
-        "bonusType", "bonusName", "planType",
-        "year", "ratio",
-    ]
-    df_success = df_success[col_order]
-
-    df_success.to_excel("pcalife_bonus_all_years.xlsx", index=False)
-    print("\n✅ 已輸出：pcalife_bonus_all_years.xlsx")
-else:
-    print("\n⚠ 沒有任何成功的利率資料（多半是 Cookie 過期或 seqNo 全部無分紅）。")
-
-df_failed.to_excel("pcalife_bonus_failed_seqno.xlsx", index=False)
-print(f"⚠ 無法取得分紅資料的 seqNo 有 {len(df_failed)} 筆 → pcalife_bonus_failed_seqno.xlsx")
+Sub FindAllDataValidationLinks()
+    Dim ws As Worksheet
+    Dim rng As Range, c As Range
+    Dim row As Long
+    Dim result As Worksheet
+    
+    ' 建立結果表
+    Set result = Sheets.Add
+    result.Name = "DV檢查結果"
+    result.Range("A1:D1") = Array("Sheet", "Cell", "Validation Type", "Source")
+    row = 2
+    
+    ' 掃描所有工作表
+    For Each ws In ThisWorkbook.Worksheets
+        On Error Resume Next
+        Set rng = ws.Cells.SpecialCells(xlCellTypeAllValidation)
+        On Error GoTo 0
+        
+        If Not rng Is Nothing Then
+            For Each c In rng
+                If c.Validation.Type <> 0 Then
+                    result.Cells(row, 1).Value = ws.Name
+                    result.Cells(row, 2).Value = c.Address
+                    result.Cells(row, 3).Value = c.Validation.Type
+                    result.Cells(row, 4).Value = c.Validation.Formula1
+                    
+                    row = row + 1
+                End If
+            Next c
+        End If
+        
+        Set rng = Nothing
+    Next ws
+    
+    MsgBox "掃描完成！請查看「DV檢查結果」工作表。"
+End Sub
