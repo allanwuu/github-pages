@@ -1,36 +1,80 @@
-Sub FindAllDataValidationLinks()
-    Dim ws As Worksheet
-    Dim rng As Range, c As Range
-    Dim row As Long
-    Dim result As Worksheet
-    
-    ' 建立結果表
-    Set result = Sheets.Add
-    result.Name = "DV檢查結果"
-    result.Range("A1:D1") = Array("Sheet", "Cell", "Validation Type", "Source")
-    row = 2
-    
-    ' 掃描所有工作表
-    For Each ws In ThisWorkbook.Worksheets
-        On Error Resume Next
-        Set rng = ws.Cells.SpecialCells(xlCellTypeAllValidation)
-        On Error GoTo 0
-        
-        If Not rng Is Nothing Then
-            For Each c In rng
-                If c.Validation.Type <> 0 Then
-                    result.Cells(row, 1).Value = ws.Name
-                    result.Cells(row, 2).Value = c.Address
-                    result.Cells(row, 3).Value = c.Validation.Type
-                    result.Cells(row, 4).Value = c.Validation.Formula1
-                    
-                    row = row + 1
-                End If
-            Next c
-        End If
-        
-        Set rng = Nothing
-    Next ws
-    
-    MsgBox "掃描完成！請查看「DV檢查結果」工作表。"
-End Sub
+# pip install requests beautifulsoup4 pandas openpyxl
+
+import re
+import time
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+    "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+}
+
+def _pick_by_label(full_text: str, label: str) -> str | None:
+    """
+    從整頁純文字抓 'label : value' 或 'label：value'。
+    """
+    # 允許半形/全形冒號、允許冒號前後空白
+    pattern = rf"{re.escape(label)}\s*[:：]\s*([^\n\r]+)"
+    m = re.search(pattern, full_text)
+    return m.group(1).strip() if m else None
+
+def scrape_fubon_product(url: str, timeout=20) -> dict:
+    r = requests.get(url, headers=HEADERS, timeout=timeout)
+    r.raise_for_status()
+
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    # 取整頁文字（用來做 label 抓取 + 關鍵字判斷）
+    text = soup.get_text("\n", strip=True)
+
+    # 商品代號：通常在 breadcrumbs/標題附近，這裡用 URL 最末段當 fallback
+    product_code = url.rstrip("/").split("/")[-1]
+
+    # 商品名稱：抓頁面大標題（抓不到就 None）
+    title = None
+    h1 = soup.find(["h1", "h2"])
+    if h1:
+        title = h1.get_text(strip=True)
+
+    pay_period = _pick_by_label(text, "繳費年期")
+    coverage_period = _pick_by_label(text, "保障年期")
+    currency = _pick_by_label(text, "幣別")
+
+    # 預設規則：外幣看幣別；分紅看關鍵字
+    is_fx = None
+    if currency:
+        is_fx = (currency != "新臺幣")
+
+    is_dividend = any(k in text for k in ["分紅", "紅利", "保單紅利"])
+
+    return {
+        "url": url,
+        "product_code": product_code,
+        "product_name": title,
+        "pay_period": pay_period,
+        "coverage_period": coverage_period,
+        "currency": currency,
+        "is_foreign_currency": is_fx,
+        "is_dividend": is_dividend,
+    }
+
+def scrape_batch(urls: list[str], sleep_sec=0.6) -> pd.DataFrame:
+    rows = []
+    for u in urls:
+        try:
+            rows.append(scrape_fubon_product(u))
+        except Exception as e:
+            rows.append({"url": u, "error": str(e)})
+        time.sleep(sleep_sec)  # 友善一點，別把人家網站當你家冰箱一直開關
+    return pd.DataFrame(rows)
+
+if __name__ == "__main__":
+    urls = [
+        "https://www.fubon.com/life/product/personal/life-refund/PAO",
+        # 你把其他商品網址一行一個貼上來
+    ]
+    df = scrape_batch(urls)
+    df.to_excel("fubon_products_weekly.xlsx", index=False)
+    print(df)
