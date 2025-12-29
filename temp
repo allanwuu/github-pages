@@ -1,80 +1,116 @@
-# pip install requests beautifulsoup4 pandas openpyxl
-
+# -*- coding: utf-8 -*-
 import re
 import time
-import pandas as pd
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+from pathlib import Path
+from datetime import datetime
+
+# =======================
+# ★ 你只要填這一行 ★
+# =======================
+OUTPUT_DIR = ""   # 例如：r"C:\Users\YourName\Desktop\Fubon"
+
+# =======================
+SOURCES = [
+    "https://www.fubon.com/life/product/personal/life-refund/",
+    "https://www.fubon.com/life/product/personal/long-term-saving/",
+]
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-    "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+    "User-Agent": "Mozilla/5.0",
+    "Accept-Language": "zh-TW,zh;q=0.9",
 }
 
-def _pick_by_label(full_text: str, label: str) -> str | None:
-    """
-    從整頁純文字抓 'label : value' 或 'label：value'。
-    """
-    # 允許半形/全形冒號、允許冒號前後空白
-    pattern = rf"{re.escape(label)}\s*[:：]\s*([^\n\r]+)"
-    m = re.search(pattern, full_text)
+# ---------- 工具 ----------
+
+def norm_url(u: str) -> str:
+    return u.split("#")[0].rstrip("/")
+
+def pick_label(text: str, label: str):
+    m = re.search(rf"{re.escape(label)}\s*[:：]\s*([^\n\r]+)", text)
     return m.group(1).strip() if m else None
 
-def scrape_fubon_product(url: str, timeout=20) -> dict:
-    r = requests.get(url, headers=HEADERS, timeout=timeout)
-    r.raise_for_status()
+# ---------- Step 1：分類頁抓商品 ----------
 
+def get_product_urls_from_category(category_url: str):
+    r = requests.get(category_url, headers=HEADERS, timeout=20)
+    r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
 
-    # 取整頁文字（用來做 label 抓取 + 關鍵字判斷）
+    urls = set()
+    for a in soup.select("a[href]"):
+        href = a.get("href", "").strip()
+        if not href:
+            continue
+        full = urljoin(category_url, href)
+        full_n = norm_url(full)
+
+        if full_n.startswith("https://www.fubon.com/life/product/personal/"):
+            if full_n != norm_url(category_url):
+                urls.add(full_n)
+
+    return sorted(urls)
+
+# ---------- Step 2：商品頁抓欄位 ----------
+
+def scrape_product(product_url: str):
+    r = requests.get(product_url, headers=HEADERS, timeout=20)
+    r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+
     text = soup.get_text("\n", strip=True)
 
-    # 商品代號：通常在 breadcrumbs/標題附近，這裡用 URL 最末段當 fallback
-    product_code = url.rstrip("/").split("/")[-1]
+    title_tag = soup.find("h1") or soup.find("h2")
+    title = title_tag.get_text(strip=True) if title_tag else None
 
-    # 商品名稱：抓頁面大標題（抓不到就 None）
-    title = None
-    h1 = soup.find(["h1", "h2"])
-    if h1:
-        title = h1.get_text(strip=True)
-
-    pay_period = _pick_by_label(text, "繳費年期")
-    coverage_period = _pick_by_label(text, "保障年期")
-    currency = _pick_by_label(text, "幣別")
-
-    # 預設規則：外幣看幣別；分紅看關鍵字
-    is_fx = None
-    if currency:
-        is_fx = (currency != "新臺幣")
-
-    is_dividend = any(k in text for k in ["分紅", "紅利", "保單紅利"])
+    currency = pick_label(text, "幣別")
+    is_fx = "是" if currency and currency != "新臺幣" else "否"
+    is_bonus = "是" if any(k in text for k in ["分紅", "紅利", "保單紅利"]) else "否"
 
     return {
-        "url": url,
-        "product_code": product_code,
-        "product_name": title,
-        "pay_period": pay_period,
-        "coverage_period": coverage_period,
-        "currency": currency,
-        "is_foreign_currency": is_fx,
-        "is_dividend": is_dividend,
+        "商品代碼": norm_url(product_url).split("/")[-1],
+        "商品名稱": title,
+        "繳費年期": pick_label(text, "繳費年期"),
+        "保障年期": pick_label(text, "保障年期"),
+        "幣別": currency,
+        "外幣": is_fx,
+        "分紅": is_bonus,
+        "來源網址": norm_url(product_url),
     }
 
-def scrape_batch(urls: list[str], sleep_sec=0.6) -> pd.DataFrame:
+# ---------- Step 3：主流程 ----------
+
+def run():
+    if not OUTPUT_DIR:
+        raise ValueError("請先在 OUTPUT_DIR 填入存檔資料夾路徑")
+
+    out_dir = Path(OUTPUT_DIR)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    all_product_urls = set()
+    for src in SOURCES:
+        urls = get_product_urls_from_category(norm_url(src) + "/")
+        all_product_urls.update(urls)
+
     rows = []
-    for u in urls:
+    for url in sorted(all_product_urls):
         try:
-            rows.append(scrape_fubon_product(u))
+            rows.append(scrape_product(url))
         except Exception as e:
-            rows.append({"url": u, "error": str(e)})
-        time.sleep(sleep_sec)  # 友善一點，別把人家網站當你家冰箱一直開關
-    return pd.DataFrame(rows)
+            rows.append({"來源網址": url, "error": str(e)})
+        time.sleep(0.4)
+
+    df = pd.DataFrame(rows)
+    df["抓取日期"] = datetime.now().strftime("%Y-%m-%d")
+
+    filename = f"富邦_壽險商品_{datetime.now().strftime('%Y%m%d')}.xlsx"
+    output_path = out_dir / filename
+
+    df.to_excel(output_path, index=False)
+    print(f"✅ 已輸出：{output_path}")
 
 if __name__ == "__main__":
-    urls = [
-        "https://www.fubon.com/life/product/personal/life-refund/PAO",
-        # 你把其他商品網址一行一個貼上來
-    ]
-    df = scrape_batch(urls)
-    df.to_excel("fubon_products_weekly.xlsx", index=False)
-    print(df)
+    run()
